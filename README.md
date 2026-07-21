@@ -1,1 +1,1 @@
-Welcome to the homepage of Trikinetic data analysis for _Nasonia_ in the social epigenetics lab at the University of Leicester.
+Welcome to the homepage of Trikinetic data analysis for _Nasonia_ in the social epigenetics lab at the University of Leicester. For full instructions on data analysis please see our [wiki](https://github.com/C-L-Thomas/Nasonia_Trikinetics/wiki).
