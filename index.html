@@ -4,177 +4,470 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Trikinetics lifespan tool</title>
+
 <style>
-:root{font-family:system-ui,sans-serif;color:#17332f;background:#f2f6f4}
-*{box-sizing:border-box}
-body{max-width:1080px;margin:auto;padding:40px 24px}
-h1{font-size:38px;margin:8px 0}
-h2{font-size:20px}
-p{line-height:1.6;color:#50635e}
-.tag{letter-spacing:2px;font-size:12px;color:#39786b}
-section{background:white;border:1px solid #d8e3de;border-radius:16px;padding:24px;margin:20px 0}
-button,.pick{display:inline-block;background:#226959;color:white;border:0;border-radius:8px;padding:12px 18px;font:inherit;cursor:pointer;margin:5px 8px 5px 0}
-button:disabled{opacity:.45;cursor:default}
-.secondary{background:#e7eeea;color:#23483e}
-select,input[type=number]{padding:10px;border:1px solid #bccfc5;border-radius:7px;font:inherit;max-width:100%}
-label{display:block;margin:12px 0}
-label.pick{display:inline-block}
-input[type=file]{display:none}
-table{border-collapse:collapse;width:100%;font-size:13px}
-td,th{text-align:left;padding:10px;border-bottom:1px solid #e2eae5;white-space:nowrap}
-th{background:#f3f7f4}
-.scroll{overflow:auto;max-height:460px}
-.status{white-space:pre-wrap;padding:12px;background:#f2f6f4;border-radius:8px}
-.error{color:#a32b2b}
-.stats{display:flex;gap:32px;flex-wrap:wrap}
-.stats strong{font-size:28px;display:block}
-progress{width:100%;accent-color:#226959}
-summary{cursor:pointer}
-footer{font-size:13px;color:#62736b}
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #23211e;
+  background: #111111;
+  --gold: #ffc526;
+  --ink: #24211f;
+  --muted: #706a5e;
+  --line: #d9ad28;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: #111111;
+  max-width: 1160px;
+  margin: auto;
+  padding: 34px 28px 24px;
+}
+
+h1 {
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -1.8px;
+  margin: 12px 0 18px;
+}
+
+h2 {
+  font-size: 21px;
+  letter-spacing: -.45px;
+  margin: 0 0 16px;
+}
+
+p {
+  line-height: 1.65;
+  color: #40351c;
+  font-size: 14px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 40px;
+  align-items: center;
+  background: var(--ink);
+  border: 1px solid #443b24;
+  border-radius: 22px;
+  padding: 36px 40px;
+  margin-bottom: 26px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--gold);
+}
+
+.hero h1 { color: #fff; }
+
+.tag {
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.logo-card {
+  background: #fff;
+  border: 1px solid #eee9df;
+  border-radius: 14px;
+  padding: 15px;
+  box-shadow: 0 6px 20px #00000014;
+}
+
+section {
+  background: #f4ce55;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 28px 30px;
+  margin: 20px 0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+}
+
+section h2:first-child {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(36, 33, 31, .2);
+}
+
+button, .pick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: #ffcf3d;
+  border: 1px solid var(--ink);
+  border-radius: 9px;
+  padding: 11px 17px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  margin: 5px 8px 5px 0;
+  transition: background .15s, box-shadow .15s;
+}
+
+button:hover, .pick:hover { background: #38332c; }
+
+button:disabled {
+  opacity: .42;
+  cursor: default;
+  box-shadow: none;
+}
+
+.secondary {
+  background: #fff3c6;
+  color: var(--ink);
+  border-color: #b68d25;
+}
+
+.secondary:hover { background: #ffe6a0; }
+
+select, input[type=number] {
+  padding: 11px 13px;
+  border: 1px solid #d5cebf;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  max-width: 100%;
+}
+
+select:focus, input:focus {
+  outline: 2px solid #e5b21e;
+  outline-offset: 3px;
+}
+
+button:focus-visible, .pick:focus-within, summary:focus-visible {
+  outline: 2px solid #bd8c00;
+  outline-offset: 4px;
+}
+
+label {
+  display: block;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+label.pick { display: inline-flex; }
+input[type=file] { display: none; }
+input[type=checkbox], progress { accent-color: #b88800; }
+
+input[type=color] {
+  height: 38px;
+  width: 66px;
+  border: 1px solid #d7d0c0;
+  border-radius: 7px;
+  padding: 3px;
+  background: #fff;
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+
+td, th {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9e4d9;
+  white-space: nowrap;
+}
+
+th {
+  background: #fcf6e3;
+  color: #4f452d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+tbody tr:hover { background: #fffdf5; }
+
+.scroll {
+  overflow: auto;
+  max-height: 460px;
+  border-radius: 9px;
+}
+
+.status {
+  white-space: pre-wrap;
+  padding: 14px 16px;
+  background: #f8f5ed;
+  border: 1px solid #ede6d6;
+  border-left: 3px solid #d9ad28;
+  border-radius: 9px;
+  font-size: 13px;
+  color: #625940;
+}
+
+.status:empty { display: none; }
+
+.error {
+  color: #a32b2b;
+  border-left-color: #a32b2b;
+}
+
+.stats {
+  display: flex;
+  gap: 46px;
+  flex-wrap: wrap;
+  margin: 16px 0 20px;
+  color: #4f4120;
+  font-size: 12px;
+}
+
+.stats strong {
+  font-size: 34px;
+  font-weight: 650;
+  display: block;
+  color: var(--ink);
+  letter-spacing: -1px;
+}
+
+progress {
+  width: 100%;
+  height: 8px;
+  margin: 16px 0;
+}
+
+details {
+  margin: 22px 0;
+  padding: 14px 16px;
+  background: #faf8f2;
+  border: 1px solid #ece7dd;
+  border-radius: 9px;
+}
+
+summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: #655c45;
+}
+
+footer {
+  font-size: 12px;
+  color: #d5c8a2;
+  border-top: 1px solid #443b24;
+  padding: 20px 4px;
+  margin-top: 26px;
+  line-height: 1.6;
+}
+
+#statisticsPanel h2 { margin: 28px 0 16px; }
+
+#plot {
+  max-height: none;
+  border: 1px solid #ebe5d8;
+  background: #fff;
+  margin: 20px 0 14px;
+}
+
+#back { margin-bottom: 24px; }
+
+@media(max-width:650px) {
+  body { padding: 18px 14px; }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 28px 25px;
+  }
+
+  .logo-card { width: 170px; }
+  section { padding: 22px 18px; }
+  .stats { gap: 28px; }
+  h1 { letter-spacing: -1px; }
+}
 </style>
 </head>
 
 <body>
-<div class="tag">NASONIA · STUDENT TOOLS</div>
-<h1>Trikinetics lifespan tool</h1>
-<p>Load monitor recordings and compare one experimental factor. Your files stay in this browser.</p>
+<header class="hero">
+  <div>
+    <div class="tag">Social Epigenetics Lab · Student tools</div>
+    <h1>Trikinetics<br>lifespan tool</h1>
+  </div>
+
+  <div class="logo-card">
+    <img class="brand-logo"
+         alt="Social Epigenetics Lab"
+         src="lab_logo.png">
+  </div>
+</header>
 
 <div id="loadPage">
-<section>
-  <h2>1 · Choose your experiment files</h2>
-  <p>Select the folder containing <b>metadata.csv</b> and files such as <b>Monitor74.txt</b>. Alternatively, select those files together.</p>
+  <section>
+    <h2>1 · Choose your experiment files</h2>
 
-  <label class="pick">
-    Choose folder
-    <input id="folder" type="file" webkitdirectory multiple>
-  </label>
-
-  <label class="pick secondary">
-    Choose files
-    <input id="files" type="file" accept=".csv,.txt" multiple>
-  </label>
-
-  <div id="inventory" class="status">No files selected.</div>
-</section>
-
-<section>
-  <h2>2 · Choose one factor</h2>
-  <label for="factor">Factor to retain alongside monitor, position and dates</label>
-
-  <select id="factor" disabled>
-    <option value="">Choose files first</option>
-  </select>
-
-  <p id="levels">All other experimental metadata columns will be omitted from the loaded output.</p>
-
-  <details>
-    <summary>Monitor file format</summary>
     <p>
-      Standard DAM text files are expected, with recording number,
-      date and time in columns 1–3 and 32 activity channels starting
-      at column 11. Adjust the activity column if your export differs.
-      Only normal activity records (status 1, Ct) are loaded.
-      Monitor status/event rows are skipped.
-      Supported dates include 21 Aug 26, 21/08/2026 and 2026-08-21.
+      Select the folder containing <b>metadata.csv</b> and files such
+      as <b>Monitor74.txt</b>. Alternatively, select those files together.
     </p>
-    <label>
-      First activity column (counting from 1)
-      <input id="offset" type="number" min="4" max="100" value="11">
+
+    <label class="pick">
+      Choose folder
+      <input id="folder" type="file" webkitdirectory multiple>
     </label>
-  </details>
 
-  <button id="load" disabled>Load data</button>
-  <progress id="progress" value="0" max="1" hidden></progress>
-  <div id="status" role="status" aria-live="polite"></div>
-</section>
+    <label class="pick secondary">
+      Choose files
+      <input id="files" type="file" accept=".csv,.txt" multiple>
+    </label>
 
-<section id="results" hidden>
-  <h2>3 · Loaded data</h2>
-  <div id="stats" class="stats"></div>
-  <p>
-    Summary per animal within its metadata date window.
-    End time means the last loaded recording.
-    Continue to the next page to generate lifespan curves.
-  </p>
-  <button id="next">Next: Lifespan curves →</button>
+    <div id="inventory" class="status">No files selected.</div>
+  </section>
 
-  <div class="scroll">
-    <table>
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
-</section>
+  <section>
+    <h2>2 · Choose one factor</h2>
+
+    <label for="factor">
+      Factor to retain alongside monitor, position and dates
+    </label>
+
+    <select id="factor" disabled>
+      <option value="">Choose files first</option>
+    </select>
+
+    <p id="levels">
+      All other experimental metadata columns will be omitted
+      from the loaded output.
+    </p>
+
+    <details>
+      <summary>Monitor file format</summary>
+
+      <p>
+        Standard DAM text files are expected: recording number, date
+        and time in columns 1–3, with 32 activity channels starting at
+        column 11. Adjust the activity column if your export differs.
+        Only normal activity records (status 1, Ct) are loaded;
+        monitor status/event rows are skipped. Dates such as
+        21 Aug 26, 21/08/2026 and 2026-08-21 are supported.
+      </p>
+
+      <label>
+        First activity column (counting from 1)
+        <input id="offset" type="number" min="4" max="100" value="11">
+      </label>
+    </details>
+
+    <button id="load" disabled>Load data</button>
+    <progress id="progress" value="0" max="1" hidden></progress>
+    <div id="status" role="status" aria-live="polite"></div>
+  </section>
+
+  <section id="results" hidden>
+    <h2>3 · Loaded data</h2>
+    <div id="stats" class="stats"></div>
+
+    <p>
+      Summary per animal within its metadata date window.
+      End time means the last loaded recording. Continue to the
+      next page to generate lifespan curves.
+    </p>
+
+    <button id="next">Next: Lifespan curves →</button>
+
+    <div class="scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <div id="curvePage" hidden>
-<section>
-  <button id="back" class="secondary">← Back to loaded data</button>
-  <h2>Lifespan curves</h2>
-  <p>
-    Generate Kaplan–Meier curves for your selected factor.
-    Time is measured from each animal’s metadata start date.
-  </p>
+  <section>
+    <button id="back" class="secondary">← Back to loaded data</button>
 
-  <label>
-    Inactivity confirmation window (hours)
-    <input id="windowHours" type="number" min="1" max="168" value="24">
-  </label>
+    <h2>Lifespan curves</h2>
 
-  <p>
-    Death is inferred at the start of the first uninterrupted recorded
-    period with zero beam crossings for the chosen duration.
-    Any later movement is ignored.
-    Animals without a confirmed death are censored at their last recording.
-    This rule differs from the rolling low-activity method in the R app.
-  </p>
+    <p>
+      Generate Kaplan–Meier curves for your selected factor.
+      Time is measured from each animal’s metadata start date.
+    </p>
 
-  <button id="generate">Generate curves</button>
-  <div id="curveStatus" class="status" role="status"></div>
-  <div id="plot" class="scroll"></div>
-  <div id="legend"></div>
+    <label>
+      Inactivity confirmation window (hours)
+      <input id="windowHours" type="number" min="1" max="168" value="24">
+    </label>
 
-  <div id="graphActions">
-    <button id="downloadSvg" class="secondary" disabled>Download graph (SVG)</button>
-    <button id="downloadPng" class="secondary" disabled>Download graph (PNG)</button>
-  </div>
+    <button id="generate">Generate curves</button>
+    <div id="curveStatus" class="status" role="status"></div>
 
-  <div id="statisticsPanel"></div>
+    <div id="settings"></div>
+    <div id="plot" class="scroll"></div>
+    <div id="legend"></div>
 
-  <h2>Animal results</h2>
-  <p>
-    All loaded animals are included automatically.
-    A recording gap resets the inactivity confirmation period;
-    missing observations are not treated as zero activity.
-  </p>
+    <div>
+      <button id="svgDownload" class="secondary" disabled>
+        Download graph (SVG)
+      </button>
+      <button id="pngDownload" class="secondary" disabled>
+        Download graph (PNG)
+      </button>
+    </div>
 
-  <div class="scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>Monitor</th>
-          <th>Position</th>
-          <th>Group</th>
-          <th>Time (days)</th>
-          <th>Automatic result</th>
-        </tr>
-      </thead>
-      <tbody id="review"></tbody>
-    </table>
-  </div>
-</section>
+    <div id="statisticsPanel"></div>
+
+    <h2>Animal results</h2>
+
+    <p>
+      All loaded animals are included automatically. A recording gap
+      resets the inactivity confirmation period; missing observations
+      are not treated as zero activity. No exclusion controls are used.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Monitor</th>
+            <th>Position</th>
+            <th>Group</th>
+            <th>Time (days)</th>
+            <th>Automatic result</th>
+          </tr>
+        </thead>
+        <tbody id="review"></tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <footer>
-  Works without installing R. For folders, use a current Chrome or Edge
-  browser on Mac or Windows; individual file selection is also available.
+  Works without installing R. For folders, use a current Chrome or
+  Edge browser on Mac or Windows; individual file selection is also
+  available.
 </footer>
 
 <script>
-"use strict";
+'use strict';
 
 const $ = id => document.getElementById(id);
-const required = ["file","region_id","start_datetime","stop_datetime"];
+const required = ['file', 'region_id', 'start_datetime', 'stop_datetime'];
 
 let selected = [];
 let metadata = [];
@@ -182,95 +475,110 @@ let headers = [];
 let output = [];
 let traces = [];
 let lifespans = [];
-let graphWindowHours = 24;
 
-/* CSV parser */
+const settings = $('settings');
+const statisticsPanel = $('statisticsPanel');
+const svgButton = $('svgDownload');
+const pngButton = $('pngDownload');
+
+const groupColours = new Map();
+const referenceGroups = new Set();
+
+const palette = [
+  '#bc8700', '#24211f', '#877b5d',
+  '#b8612e', '#53647b', '#986f8b'
+];
+
 function csvParse(s) {
-  s = s.replace(/^\uFEFF/, "");
+  s = s.replace(/^\uFEFF/, '');
+
   const rows = [];
-  let row = [], value = "", quoted = false;
+  let row = [];
+  let v = '';
+  let quoted = false;
 
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
 
     if (c === '"') {
       if (quoted && s[i + 1] === '"') {
-        value += '"';
+        v += '"';
         i++;
       } else {
         quoted = !quoted;
       }
-    } else if (c === "," && !quoted) {
-      row.push(value);
-      value = "";
-    } else if ((c === "\n" || c === "\r") && !quoted) {
-      if (c === "\r" && s[i + 1] === "\n") i++;
-      row.push(value);
-      if (row.some(x => x !== "")) rows.push(row);
+    } else if (c === ',' && !quoted) {
+      row.push(v);
+      v = '';
+    } else if ((c === '\n' || c === '\r') && !quoted) {
+      if (c === '\r' && s[i + 1] === '\n') i++;
+
+      row.push(v);
+      if (row.some(x => x !== '')) rows.push(row);
+
       row = [];
-      value = "";
+      v = '';
     } else {
-      value += c;
+      v += c;
     }
   }
 
-  if (quoted) throw Error("Unclosed quotation mark in metadata CSV.");
+  if (quoted) throw Error('Unclosed quotation mark in metadata CSV.');
 
-  if (value || row.length) {
-    row.push(value);
+  if (v || row.length) {
+    row.push(v);
     rows.push(row);
   }
 
   return rows;
 }
 
-/* Date parsing independent of the student's computer timezone */
-function stamp(date, time = "00:00:00") {
-  let year, month, day;
+function stamp(date, time = '00:00:00') {
+  let y, m, d;
   let match = date.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
 
   if (match) {
-    [, year, month, day] = match;
+    [, y, m, d] = match;
   } else {
-    match = date.trim().match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+    match = date.trim().match(
+      /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/
+    );
 
     if (match) {
-      [, day, month, year] = match;
+      [, d, m, y] = match;
     } else {
-      match = date.trim().match(/^(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})$/);
+      match = date.trim().match(
+        /^(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})$/
+      );
+
       if (!match) return NaN;
 
-      day = match[1];
-      month = [
-        "jan","feb","mar","apr","may","jun",
-        "jul","aug","sep","oct","nov","dec"
+      d = match[1];
+      m = [
+        'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+        'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
       ].indexOf(match[2].toLowerCase()) + 1;
-      year = match[3];
+      y = match[3];
     }
   }
 
-  year = Number(year);
-  if (year < 100) year += year < 70 ? 2000 : 1900;
+  y = +y;
+  if (y < 100) y += y < 70 ? 2000 : 1900;
 
-  const clock = time.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
-  if (!clock) return NaN;
+  const t = time.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  if (!t) return NaN;
 
-  const timestamp = Date.UTC(
-    year, Number(month) - 1, Number(day),
-    Number(clock[1]), Number(clock[2]), Number(clock[3] || 0)
-  );
+  const n = Date.UTC(y, +m - 1, +d, +t[1], +t[2], +(t[3] || 0));
+  const a = new Date(n);
 
-  const checked = new Date(timestamp);
-
-  const valid =
-    checked.getUTCFullYear() === year &&
-    checked.getUTCMonth() === Number(month) - 1 &&
-    checked.getUTCDate() === Number(day) &&
-    Number(clock[1]) < 24 &&
-    Number(clock[2]) < 60 &&
-    Number(clock[3] || 0) < 60;
-
-  return valid ? timestamp : NaN;
+  return (
+    a.getUTCFullYear() === y &&
+    a.getUTCMonth() === +m - 1 &&
+    a.getUTCDate() === +d &&
+    +t[1] < 24 &&
+    +t[2] < 60 &&
+    +(t[3] || 0) < 60
+  ) ? n : NaN;
 }
 
 function metaStamp(s) {
@@ -280,120 +588,118 @@ function metaStamp(s) {
 
 function fmt(n) {
   return Number.isFinite(n)
-    ? new Date(n).toISOString().replace("T", " ").slice(0, 19)
-    : "";
+    ? new Date(n).toISOString().replace('T', ' ').slice(0, 19)
+    : '';
 }
 
 function say(message, error = false) {
-  $("status").textContent = message;
-  $("status").className = "status" + (error ? " error" : "");
-}
-
-function clearCurveResults() {
-  lifespans = [];
-  $("plot").replaceChildren();
-  $("legend").replaceChildren();
-  $("review").replaceChildren();
-  $("statisticsPanel").replaceChildren();
-  $("downloadSvg").disabled = true;
-  $("downloadPng").disabled = true;
+  $('status').textContent = message;
+  $('status').className = 'status' + (error ? ' error' : '');
 }
 
 function invalidate() {
   output = [];
   traces = [];
-  clearCurveResults();
-  $("results").hidden = true;
-  $("curvePage").hidden = true;
-  $("loadPage").hidden = false;
+  lifespans = [];
+
+  $('results').hidden = true;
+  $('curvePage').hidden = true;
+  $('loadPage').hidden = false;
+  $('plot').replaceChildren();
+
+  statisticsPanel.replaceChildren();
+  settings.replaceChildren();
+  referenceGroups.clear();
+  delete settings.dataset.userCleared;
+
+  svgButton.disabled = pngButton.disabled = true;
 }
 
-/* Select metadata and monitor files */
 async function choose(files) {
   selected = [...files];
   metadata = [];
   headers = [];
-  invalidate();
 
-  $("load").disabled = true;
-  $("factor").disabled = true;
-  say("");
+  invalidate();
+  $('load').disabled = true;
+  $('factor').disabled = true;
+  say('');
 
   try {
-    const metadataFiles = selected.filter(
-      file => file.name.toLowerCase() === "metadata.csv"
+    const csvs = selected.filter(
+      f => f.name.toLowerCase() === 'metadata.csv'
     );
 
-    if (metadataFiles.length !== 1) {
-      throw Error("Select exactly one metadata.csv with your monitor files.");
+    if (csvs.length !== 1) {
+      throw Error('Select exactly one metadata.csv with your monitor files.');
     }
 
-    const rows = csvParse(await metadataFiles[0].text());
+    const rows = csvParse(await csvs[0].text());
 
-    if (rows.length < 2) throw Error("Metadata has no animal rows.");
+    if (rows.length < 2) throw Error('Metadata has no animal rows.');
 
-    headers = rows.shift().map(header => header.trim());
+    headers = rows.shift().map(h => h.trim());
 
     if (new Set(headers).size !== headers.length) {
-      throw Error("Duplicate metadata column names.");
+      throw Error('Duplicate metadata column names.');
     }
 
-    for (const column of required) {
-      if (!headers.includes(column)) {
-        throw Error("Metadata is missing " + column);
-      }
+    for (const h of required) {
+      if (!headers.includes(h)) throw Error('Metadata is missing ' + h);
     }
 
-    metadata = rows.map((row, index) => {
+    metadata = rows.map((row, i) => {
       if (row.length !== headers.length) {
-        throw Error("Wrong number of fields on metadata row " + (index + 2));
+        throw Error('Wrong number of fields on metadata row ' + (i + 2));
       }
+
       return Object.fromEntries(
-        headers.map((header, j) => [header, row[j].trim()])
+        headers.map((h, j) => [h, row[j].trim()])
       );
     });
 
-    $("inventory").textContent =
-      metadata.length + " animals in metadata\n" +
-      selected.filter(file => /\.txt$/i.test(file.name))
-        .map(file => file.name + " · " +
-          (file.size / 1048576).toFixed(1) + " MB")
-        .join("\n");
+    $('inventory').textContent =
+      metadata.length + ' animals in metadata\n' +
+      selected
+        .filter(f => /\.txt$/i.test(f.name))
+        .map(f => f.name + ' · ' + (f.size / 1048576).toFixed(1) + ' MB')
+        .join('\n');
 
-    $("factor").replaceChildren(
-      new Option("Select one factor", ""),
-      ...headers.filter(header => !required.includes(header))
-        .map(header => new Option(header, header))
+    $('factor').replaceChildren(
+      new Option('Select one factor', ''),
+      ...headers
+        .filter(h => !required.includes(h))
+        .map(h => new Option(h, h))
     );
 
-    $("factor").disabled = false;
+    $('factor').disabled = false;
   } catch (error) {
     say(error.message, true);
   }
 }
 
-$("folder").onchange = event => choose(event.target.files);
-$("files").onchange = event => choose(event.target.files);
+$('folder').onchange = e => choose(e.target.files);
+$('files').onchange = e => choose(e.target.files);
 
-$("factor").onchange = () => {
+$('factor').onchange = () => {
   invalidate();
-  $("load").disabled = !$("factor").value;
+  $('load').disabled = !$('factor').value;
 
   const values = [
-    ...new Set(metadata.map(row => row[$("factor").value]))
+    ...new Set(metadata.map(row => row[$('factor').value]))
   ];
 
-  $("levels").textContent = values.length + " levels: " +
-    values.map(value => value || "(blank)").join(", ");
+  $('levels').textContent =
+    values.length + ' levels: ' +
+    values.map(v => v || '(blank)').join(', ');
 };
 
-$("offset").onchange = invalidate;
+$('offset').onchange = invalidate;
 
-/* Stream file contents in chunks */
 async function* lines(file) {
   const reader = file.stream().getReader();
   const decoder = new TextDecoder();
-  let pending = "";
+  let pending = '';
 
   try {
     while (true) {
@@ -401,48 +707,50 @@ async function* lines(file) {
       if (done) break;
 
       pending += decoder.decode(value, { stream: true });
-      const parts = pending.split("\n");
+
+      const parts = pending.split('\n');
       pending = parts.pop();
 
-      for (const part of parts) yield part.replace(/\r$/, "");
+      for (const part of parts) yield part.replace(/\r$/, '');
     }
 
     pending += decoder.decode();
-    if (pending) yield pending.replace(/\r$/, "");
+    if (pending) yield pending.replace(/\r$/, '');
   } finally {
     reader.releaseLock();
   }
 }
 
-/* Load activity inside each metadata date window */
 async function run() {
   invalidate();
 
-  $("load").disabled = true;
-  $("folder").disabled = true;
-  $("files").disabled = true;
-  $("factor").disabled = true;
-  $("offset").disabled = true;
-  $("progress").hidden = false;
-  $("progress").value = 0;
+  $('load').disabled = true;
+  $('folder').disabled = true;
+  $('files').disabled = true;
+  $('factor').disabled = true;
+  $('offset').disabled = true;
+  $('progress').hidden = false;
 
   try {
-    const factor = $("factor").value;
-    const offset = Number($("offset").value) - 1;
+    const factor = $('factor').value;
+    const offset = +$('offset').value - 1;
 
-    if (!factor) throw Error("Choose a factor.");
+    if (!factor) throw Error('Choose a factor.');
 
     if (!Number.isInteger(offset) || offset < 3 || offset > 99) {
-      throw Error("Invalid activity column.");
+      throw Error('Invalid activity column.');
     }
 
     const fileMap = new Map();
 
-    for (const file of selected.filter(file => /\.txt$/i.test(file.name))) {
+    for (const file of selected.filter(f => /\.txt$/i.test(f.name))) {
       if (fileMap.has(file.name)) {
-        throw Error("Duplicate monitor filename: " + file.name +
-          ". Select a single experiment folder.");
+        throw Error(
+          'Duplicate monitor filename: ' + file.name +
+          '. Select a single experiment folder.'
+        );
       }
+
       fileMap.set(file.name, file);
     }
 
@@ -450,21 +758,24 @@ async function run() {
     const groups = new Map();
 
     for (const row of metadata) {
-      const position = Number(row.region_id);
+      const position = +row.region_id;
       const start = metaStamp(row.start_datetime);
       const stop = metaStamp(row.stop_datetime);
 
       if (!Number.isInteger(position) || position < 1 || position > 32) {
-        throw Error("Invalid position for " + row.file + ": " + row.region_id);
+        throw Error(
+          'Invalid position for ' + row.file + ': ' + row.region_id
+        );
       }
 
       if (!Number.isFinite(start) || !Number.isFinite(stop) || stop < start) {
-        throw Error("Invalid date window for " + row.file +
-          ", position " + position);
+        throw Error(
+          'Invalid date window for ' + row.file + ', position ' + position
+        );
       }
 
       if (!fileMap.has(row.file)) {
-        throw Error("Missing monitor file: " + row.file);
+        throw Error('Missing monitor file: ' + row.file);
       }
 
       const key = JSON.stringify([
@@ -472,9 +783,11 @@ async function run() {
       ]);
 
       if (seen.has(key)) {
-        throw Error("Duplicate animal row: " + row.file +
-          ", position " + position);
+        throw Error(
+          'Duplicate animal row: ' + row.file + ', position ' + position
+        );
       }
+
       seen.add(key);
 
       const animal = {
@@ -485,8 +798,8 @@ async function run() {
         [factor]: row[factor],
         records: 0,
         activity_total: 0,
-        first_record: "",
-        last_record: "",
+        first_record: '',
+        last_record: '',
         start,
         stop,
         first: Infinity,
@@ -501,86 +814,94 @@ async function run() {
 
     let completed = 0;
     const result = [];
-    const loadedTraces = [];
 
     for (const [name, animals] of groups) {
-      say("Reading " + name + "…");
-      let lineNumber = 0;
-      let validRecords = 0;
+      say('Reading ' + name + '…');
+
+      let lineNo = 0;
+      let valid = 0;
 
       for await (const line of lines(fileMap.get(name))) {
-        lineNumber++;
+        lineNo++;
         if (!line.trim()) continue;
 
-        let parts = line.includes("\t")
-          ? line.split("\t").map(value => value.trim())
+        const tabSeparated = line.includes('\t');
+
+        const parts = tabSeparated
+          ? line.split('\t').map(v => v.trim())
           : line.trim().split(/\s+/);
 
-        if (!line.includes("\t") &&
-            /^[A-Za-z]{3}$/.test(parts[2] || "")) {
-          parts.splice(1, 3, parts.slice(1, 4).join(" "));
+        if (!tabSeparated && /^[A-Za-z]{3}$/.test(parts[2] || '')) {
+          parts.splice(1, 3, parts.slice(1, 4).join(' '));
         }
 
         if (parts.length < offset + 32) {
-          throw Error(name + ", line " + lineNumber +
-            ": expected at least " + (offset + 32) +
-            " columns. Check the activity column setting.");
+          throw Error(
+            name + ', line ' + lineNo + ': expected at least ' +
+            (offset + 32) +
+            ' columns. Check the activity column setting.'
+          );
         }
 
-        if (parts[3] !== "1") continue;
+        if (parts[3] !== '1') continue;
 
-        if (parts[7] !== "Ct") {
-          throw Error(name + ", line " + lineNumber +
-            ": this loader expects beam-crossing (Ct) recordings.");
+        if (parts[7] !== 'Ct') {
+          throw Error(
+            name + ', line ' + lineNo +
+            ': this loader expects beam-crossing (Ct) recordings.'
+          );
         }
 
         const time = stamp(parts[1], parts[2]);
 
         if (!Number.isFinite(time)) {
-          throw Error(name + ", line " + lineNumber +
-            ": unsupported date/time.");
+          throw Error(
+            name + ', line ' + lineNo + ': unsupported date/time.'
+          );
         }
 
-        validRecords++;
+        valid++;
 
         for (const animal of animals) {
           if (time < animal.start || time > animal.stop) continue;
 
           const raw = parts[offset + animal.region_id - 1];
-          const activity = Number(raw);
+          const count = Number(raw);
 
-          if (raw === "" || !Number.isFinite(activity) || activity < 0) {
-            throw Error(name + ", line " + lineNumber +
-              ": invalid activity at position " + animal.region_id);
+          if (raw === '' || !Number.isFinite(count) || count < 0) {
+            throw Error(
+              name + ', line ' + lineNo +
+              ': invalid activity at position ' + animal.region_id
+            );
           }
 
           animal.times.push(time);
-          animal.counts.push(activity);
+          animal.counts.push(count);
           animal.records++;
-          animal.activity_total += activity;
+          animal.activity_total += count;
           animal.first = Math.min(animal.first, time);
           animal.last = Math.max(animal.last, time);
         }
 
-        if (lineNumber % 5000 === 0) {
-          say("Reading " + name + " · " +
-            lineNumber.toLocaleString() + " rows");
+        if (lineNo % 5000 === 0) {
+          say(
+            'Reading ' + name + ' · ' +
+            lineNo.toLocaleString() + ' rows'
+          );
           await new Promise(resolve => setTimeout(resolve, 0));
         }
       }
 
-      if (!validRecords) {
-        throw Error(name + " has no normal activity records.");
-      }
+      if (!valid) throw Error(name + ' is empty.');
 
       for (const animal of animals) {
         animal.first_record = fmt(animal.first);
         animal.last_record = fmt(animal.last);
 
-        loadedTraces.push({
+        traces.push({
           file: animal.file,
           position: animal.region_id,
-          group: animal[factor] || "(blank)",
+          group: animal[factor] || '(blank)',
           start: animal.start,
           times: animal.times,
           counts: animal.counts
@@ -592,85 +913,94 @@ async function run() {
         delete animal.last;
         delete animal.start;
         delete animal.stop;
+
         result.push(animal);
       }
 
-      $("progress").value = ++completed / groups.size;
+      $('progress').value = ++completed / groups.size;
     }
 
     output = result;
-    traces = loadedTraces;
     render();
 
     const empty = result.filter(animal => !animal.records).length;
 
-    say("Loaded " + result.length + " animals from " +
-      groups.size + " monitors." +
-      (empty ? " " + empty +
-        " animals have no records inside their metadata date window." : ""),
-      Boolean(empty));
+    say(
+      'Loaded ' + result.length + ' animals from ' +
+      groups.size + ' monitors.' +
+      (empty
+        ? ' ' + empty +
+          ' animals have no records inside their metadata date window.'
+        : ''),
+      !!empty
+    );
   } catch (error) {
     say(error.message, true);
   } finally {
-    $("load").disabled = !$("factor").value;
-    $("folder").disabled = false;
-    $("files").disabled = false;
-    $("factor").disabled = !metadata.length;
-    $("offset").disabled = false;
-    $("progress").hidden = true;
+    $('load').disabled = !$('factor').value;
+    $('folder').disabled = false;
+    $('files').disabled = false;
+    $('factor').disabled = !metadata.length;
+    $('offset').disabled = false;
+    $('progress').hidden = true;
   }
 }
 
-$("load").onclick = run;
+$('load').onclick = run;
 
-/* Loading summary */
 function render() {
-  $("results").hidden = false;
-  $("stats").replaceChildren();
+  $('results').hidden = false;
+  $('stats').replaceChildren();
 
-  const statistics = [
-    [output.length, "animals"],
-    [new Set(output.map(animal => animal.file)).size, "monitors"],
-    [new Set(output.map(animal => animal[$("factor").value])).size,
-      "factor levels"]
+  const summaries = [
+    [output.length, 'animals'],
+    [new Set(output.map(a => a.file)).size, 'monitors'],
+    [
+      new Set(output.map(a => a[$('factor').value])).size,
+      'factor levels'
+    ]
   ];
 
-  for (const [value, label] of statistics) {
-    const div = document.createElement("div");
-    const strong = document.createElement("strong");
+  for (const [value, label] of summaries) {
+    const div = document.createElement('div');
+    const strong = document.createElement('strong');
+
     strong.textContent = value;
     div.append(strong, document.createTextNode(label));
-    $("stats").append(div);
+    $('stats').append(div);
   }
 
   const columns = Object.keys(output[0]);
-  const headingRow = document.createElement("tr");
+  const headerRow = document.createElement('tr');
 
   for (const column of columns) {
-    const heading = document.createElement("th");
-    heading.textContent = column;
-    headingRow.append(heading);
+    const th = document.createElement('th');
+    th.textContent = column;
+    headerRow.append(th);
   }
 
-  $("thead").replaceChildren(headingRow);
-  $("tbody").replaceChildren();
+  $('thead').replaceChildren(headerRow);
+  $('tbody').replaceChildren();
 
   for (const animal of output) {
-    const row = document.createElement("tr");
+    const row = document.createElement('tr');
+
     for (const column of columns) {
-      const cell = document.createElement("td");
-      cell.textContent = animal[column];
-      row.append(cell);
+      const td = document.createElement('td');
+      td.textContent = animal[column];
+      row.append(td);
     }
-    $("tbody").append(row);
+
+    $('tbody').append(row);
   }
 }
 
-/* Death inference: gaps reset the timer, without excluding animals */
 function infer(trace, hours) {
   if (!trace.times.length) {
-    throw Error(trace.file + ", position " + trace.position +
-      ": no records in the selected date window. Check the metadata dates.");
+    throw Error(
+      trace.file + ', position ' + trace.position +
+      ': no records in the selected date window. Check the metadata dates.'
+    );
   }
 
   const ordered = trace.times
@@ -680,30 +1010,36 @@ function infer(trace, hours) {
   const records = [];
 
   for (const record of ordered) {
-    const previous = records[records.length - 1];
-    if (previous && previous.time === record.time) {
-      previous.count = Math.max(previous.count, record.count);
+    const last = records[records.length - 1];
+
+    if (last && last.time === record.time) {
+      last.count = Math.max(last.count, record.count);
     } else {
       records.push({ ...record });
     }
   }
 
-  const intervals = records.slice(1)
+  const differences = records
+    .slice(1)
     .map((record, i) => record.time - records[i].time)
     .sort((a, b) => a - b);
 
-  const interval = intervals.length
-    ? intervals[Math.floor(intervals.length / 2)] : 0;
+  const interval = differences.length
+    ? differences[Math.floor(differences.length / 2)]
+    : 0;
 
-  const end =
-    (records[records.length - 1].time - trace.start) / 86400000;
+  const end = (
+    records[records.length - 1].time - trace.start
+  ) / 86400000;
 
   let zeroStart = null;
   let gaps = 0;
 
   for (let i = 0; i < records.length; i++) {
-    if (i > 0 && interval > 0 &&
-        records[i].time - records[i - 1].time > interval * 1.5) {
+    if (
+      i && interval &&
+      records[i].time - records[i - 1].time > interval * 1.5
+    ) {
       zeroStart = null;
       gaps++;
     }
@@ -720,8 +1056,8 @@ function infer(trace, hours) {
         time: (zeroStart - trace.start) / 86400000,
         end,
         event: true,
-        reason: "Confirmed inactivity" +
-          (gaps ? " (recording gaps present)" : "")
+        reason: 'Confirmed inactivity' +
+          (gaps ? ' (recording gaps present)' : '')
       };
     }
   }
@@ -730,69 +1066,73 @@ function infer(trace, hours) {
     time: end,
     end,
     event: false,
-    reason: "Censored: no confirmed death" +
-      (gaps ? " (recording gaps present)" : "")
+    reason: 'Censored: no confirmed death' +
+      (gaps ? ' (recording gaps present)' : '')
   };
 }
 
-/* Kaplan–Meier estimator */
 function km(data) {
   const ordered = [...data].sort((a, b) => a.time - b.time);
+
   let risk = ordered.length;
   let survival = 1;
-  const points = [{ time: 0, survival: 1 }];
+  let variance = 0;
+
+  const points = [{
+    time: 0, survival: 1, lower: 1, upper: 1
+  }];
+
   const censors = [];
 
   for (let i = 0; i < ordered.length;) {
     const time = ordered[i].time;
-    let dead = 0, censored = 0;
+    let deaths = 0;
+    let censored = 0;
 
     while (i < ordered.length && ordered[i].time === time) {
-      if (ordered[i].event) dead++;
-      else censored++;
+      ordered[i].event ? deaths++ : censored++;
       i++;
     }
 
-    if (dead) {
-      survival *= 1 - dead / risk;
-      points.push({ time, survival });
+    if (deaths) {
+      survival *= 1 - deaths / risk;
+
+      if (risk > deaths) {
+        variance += deaths / (risk * (risk - deaths));
+      }
+
+      const se = 1.959963984540054 * Math.sqrt(variance);
+
+      points.push({
+        time,
+        survival,
+        lower: survival === 0 ? 0 : survival * Math.exp(-se),
+        upper: survival === 0
+          ? 0
+          : Math.min(1, survival * Math.exp(se))
+      });
     }
 
     if (censored) censors.push({ time, survival });
-    risk -= dead + censored;
+    risk -= deaths + censored;
   }
 
   if (ordered.length) {
     points.push({
-      time: ordered[ordered.length - 1].time,
-      survival
+      ...points[points.length - 1],
+      time: ordered[ordered.length - 1].time
     });
   }
 
   return { points, censors };
 }
 
-/* Page navigation */
-$("next").onclick = () => {
-  $("loadPage").hidden = true;
-  $("curvePage").hidden = false;
-  if (!lifespans.length) generate();
-};
-
-$("back").onclick = () => {
-  $("curvePage").hidden = true;
-  $("loadPage").hidden = false;
-};
-
-$("generate").onclick = generate;
-
-/* Generate animal results, curves and statistics */
 function generate() {
-  const hours = Number($("windowHours").value);
+  const hours = Number($('windowHours').value);
 
   if (!Number.isFinite(hours) || hours < 1 || hours > 168) {
-    $("curveStatus").textContent =
-      "Choose a window between 1 and 168 hours.";
+    $('curveStatus').textContent =
+      'Choose a window between 1 and 168 hours.';
     return;
   }
 
@@ -803,151 +1143,62 @@ function generate() {
       group: trace.group,
       ...infer(trace, hours)
     }));
-    graphWindowHours = hours;
   } catch (error) {
-    clearCurveResults();
-    $("curveStatus").textContent = error.message;
+    lifespans = [];
+    $('plot').replaceChildren();
+    $('legend').replaceChildren();
+    $('review').replaceChildren();
+    statisticsPanel.replaceChildren();
+    svgButton.disabled = pngButton.disabled = true;
+    $('curveStatus').textContent = error.message;
     return;
   }
 
-  $("review").replaceChildren();
+  $('review').replaceChildren();
 
   for (const animal of lifespans) {
-    const row = document.createElement("tr");
+    const row = document.createElement('tr');
 
     for (const value of [
       animal.file, animal.position, animal.group,
       animal.time.toFixed(3), animal.reason
     ]) {
-      const cell = document.createElement("td");
+      const cell = document.createElement('td');
       cell.textContent = value;
       row.append(cell);
     }
 
-    $("review").append(row);
+    $('review').append(row);
   }
 
   drawCurves();
-  showStatistics();
 }
 
-/* Draw curves */
-function drawCurves() {
-  const included = lifespans.map(animal => ({
-    group: animal.group,
-    time: animal.time,
-    event: animal.event
-  }));
+$('next').onclick = () => {
+  $('loadPage').hidden = true;
+  $('curvePage').hidden = false;
+  if (!lifespans.length) generate();
+};
 
-  const deaths = included.filter(animal => animal.event).length;
+$('back').onclick = () => {
+  $('curvePage').hidden = true;
+  $('loadPage').hidden = false;
+};
 
-  $("curveStatus").textContent =
-    included.length + " animals · " +
-    deaths + " inferred deaths · " +
-    (included.length - deaths) + " censored. " +
-    "All loaded animals are included. Censoring marks are shown as +.";
+$('generate').onclick = generate;
 
-  $("plot").replaceChildren();
-  $("legend").replaceChildren();
-  $("downloadSvg").disabled = $("downloadPng").disabled = !included.length;
+$('windowHours').onchange = () => {
+  lifespans = [];
+  $('plot').replaceChildren();
+  statisticsPanel.replaceChildren();
+  $('review').replaceChildren();
 
-  if (!included.length) {
-    $("curveStatus").textContent += " No data to plot.";
-    return;
-  }
+  svgButton.disabled = pngButton.disabled = true;
 
-  const namespace = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(namespace, "svg");
-  svg.setAttribute("viewBox", "0 0 900 450");
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Kaplan–Meier survival curves");
-  svg.style.minWidth = "600px";
-  svg.style.width = "100%";
+  $('curveStatus').textContent =
+    'Generate curves to apply the changed inactivity window.';
+};
 
-  function element(tag, attributes, text) {
-    const node = document.createElementNS(namespace, tag);
-    for (const [name, value] of Object.entries(attributes)) {
-      node.setAttribute(name, value);
-    }
-    if (text !== undefined) node.textContent = text;
-    svg.append(node);
-    return node;
-  }
-
-  const maximum = Math.max(1, ...included.map(animal => animal.time));
-  const X = time => 70 + 790 * time / maximum;
-  const Y = survival => 385 - 340 * survival;
-
-  for (let i = 0; i <= 5; i++) {
-    const probability = i / 5;
-    const y = Y(probability);
-
-    element("line", {
-      x1:70, x2:860, y1:y, y2:y, stroke:"#e2eae5"
-    });
-
-    element("text", {
-      x:55, y:y+4, "text-anchor":"end", "font-size":12
-    }, (probability * 100).toFixed(0) + "%");
-
-    const time = maximum * i / 5;
-    element("text", {
-      x:X(time), y:408, "text-anchor":"middle", "font-size":12
-    }, time.toFixed(1));
-  }
-
-  element("line", {
-    x1:70, x2:860, y1:385, y2:385, stroke:"#17332f"
-  });
-
-  element("line", {
-    x1:70, x2:70, y1:45, y2:385, stroke:"#17332f"
-  });
-
-  element("text", {
-    x:465, y:440, "text-anchor":"middle", "font-size":14
-  }, "Time from metadata start (days)");
-
-  element("text", {
-    x:22, y:210, transform:"rotate(-90 22 210)",
-    "text-anchor":"middle", "font-size":14
-  }, "Survival probability");
-
-  const groups = [...new Set(included.map(animal => animal.group))];
-
-  groups.forEach((group, index) => {
-    const data = included.filter(animal => animal.group === group);
-    const curve = km(data);
-    const colour = "hsl(" + ((index * 137.508) % 360) + ",60%,38%)";
-
-    let path = "M " + X(0) + " " + Y(1);
-    for (const point of curve.points.slice(1)) {
-      path += " H " + X(point.time) + " V " + Y(point.survival);
-    }
-
-    element("path", {
-      d:path, fill:"none", stroke:colour, "stroke-width":2.5
-    });
-
-    for (const point of curve.censors) {
-      element("path", {
-        d:"M " + (X(point.time)-4) + " " + Y(point.survival) +
-          " h 8 M " + X(point.time) + " " +
-          (Y(point.survival)-4) + " v 8",
-        stroke:colour, "stroke-width":1.5
-      });
-    }
-
-    const legend = document.createElement("div");
-    legend.style.color = colour;
-    legend.textContent = group + " · n=" + data.length;
-    $("legend").append(legend);
-  });
-
-  $("plot").append(svg);
-}
-
-/* Statistical numerical helpers */
 function logGamma(z) {
   const coefficients = [
     676.5203681218851, -1259.1392167224028,
@@ -956,51 +1207,68 @@ function logGamma(z) {
     9.984369578019572e-6, 1.5056327351493116e-7
   ];
 
-  if (z < 0.5) {
-    return Math.log(Math.PI) - Math.log(Math.sin(Math.PI*z)) -
-      logGamma(1-z);
+  if (z < .5) {
+    return Math.log(Math.PI) -
+      Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
   }
 
   z--;
-  let x = 0.9999999999998099;
-  coefficients.forEach((value, i) => x += value/(z+i+1));
+  let x = .9999999999998099;
+
+  coefficients.forEach((value, i) => {
+    x += value / (z + i + 1);
+  });
+
   const t = z + 7.5;
 
-  return 0.5*Math.log(2*Math.PI) +
-    (z+0.5)*Math.log(t) - t + Math.log(x);
+  return .5 * Math.log(2 * Math.PI) +
+    (z + .5) * Math.log(t) - t + Math.log(x);
 }
 
 function chiSquareTail(x, df) {
   if (x <= 0) return 1;
-  const a = df/2, z = x/2;
-  const scale = Math.exp(a*Math.log(z)-z-logGamma(a));
+
+  const a = df / 2;
+  const z = x / 2;
+  const scale = Math.exp(a * Math.log(z) - z - logGamma(a));
+
   let result;
 
-  if (z < a+1) {
-    let term = 1/a, sum = term;
-    for (let i=1; i<10000; i++) {
-      term *= z/(a+i);
+  if (z < a + 1) {
+    let term = 1 / a;
+    let sum = term;
+
+    for (let i = 1; i < 10000; i++) {
+      term *= z / (a + i);
       sum += term;
-      if (Math.abs(term) < Math.abs(sum)*1e-14) break;
+      if (Math.abs(term) < Math.abs(sum) * 1e-14) break;
     }
-    result = 1-sum*scale;
+
+    result = 1 - sum * scale;
   } else {
     const tiny = 1e-300;
-    let b=z+1-a, c=1/tiny, d=1/b, h=d;
+    let b = z + 1 - a;
+    let c = 1 / tiny;
+    let d = 1 / b;
+    let h = d;
 
-    for (let i=1; i<10000; i++) {
-      const an = -i*(i-a);
+    for (let i = 1; i < 10000; i++) {
+      const an = -i * (i - a);
       b += 2;
-      d = an*d+b;
-      if (Math.abs(d)<tiny) d=tiny;
-      c = b+an/c;
-      if (Math.abs(c)<tiny) c=tiny;
-      d = 1/d;
-      const delta=d*c;
+      d = an * d + b;
+      if (Math.abs(d) < tiny) d = tiny;
+
+      c = b + an / c;
+      if (Math.abs(c) < tiny) c = tiny;
+
+      d = 1 / d;
+      const delta = d * c;
       h *= delta;
-      if (Math.abs(delta-1)<1e-14) break;
+
+      if (Math.abs(delta - 1) < 1e-14) break;
     }
-    result = h*scale;
+
+    result = h * scale;
   }
 
   return Math.max(0, Math.min(1, result));
@@ -1008,291 +1276,864 @@ function chiSquareTail(x, df) {
 
 function solveSystem(matrix, vector) {
   const n = vector.length;
-  const rows = matrix.map((row,i) => [...row,vector[i]]);
+  const rows = matrix.map((row, i) => [...row, vector[i]]);
   const scale = Math.max(0, ...matrix.flat().map(Math.abs));
+
   if (!scale) return null;
 
-  for (let i=0; i<n; i++) {
-    let pivot=i;
+  for (let i = 0; i < n; i++) {
+    let pivot = i;
 
-    for (let j=i+1; j<n; j++) {
-      if (Math.abs(rows[j][i]) > Math.abs(rows[pivot][i])) pivot=j;
+    for (let j = i + 1; j < n; j++) {
+      if (Math.abs(rows[j][i]) > Math.abs(rows[pivot][i])) pivot = j;
     }
 
-    if (Math.abs(rows[pivot][i]) < scale*1e-12) return null;
-    [rows[i],rows[pivot]] = [rows[pivot],rows[i]];
+    if (Math.abs(rows[pivot][i]) < scale * 1e-12) return null;
 
-    const divisor=rows[i][i];
-    for (let j=i; j<=n; j++) rows[i][j] /= divisor;
+    [rows[i], rows[pivot]] = [rows[pivot], rows[i]];
 
-    for (let r=0; r<n; r++) {
-      if (r===i) continue;
-      const factor=rows[r][i];
-      for (let j=i; j<=n; j++) rows[r][j] -= factor*rows[i][j];
+    const divisor = rows[i][i];
+    for (let j = i; j <= n; j++) rows[i][j] /= divisor;
+
+    for (let r = 0; r < n; r++) {
+      if (r === i) continue;
+
+      const factor = rows[r][i];
+      for (let j = i; j <= n; j++) {
+        rows[r][j] -= factor * rows[i][j];
+      }
     }
   }
 
   return rows.map(row => row[n]);
 }
 
-/* Overall log-rank test */
 function logRank(data) {
-  const groups = [...new Set(data.map(animal => animal.group))];
-  const k=groups.length;
+  const groups = [...new Set(data.map(a => a.group))];
+  const k = groups.length;
 
-  if (k<2) {
+  if (k < 2) {
     return {
-      message:"Choose a factor with at least two levels to compare survival."
+      message: 'Choose a factor with at least two levels to compare survival.'
     };
   }
 
-  const times = [...new Set(
-    data.filter(animal => animal.event).map(animal => animal.time)
-  )].sort((a,b) => a-b);
+  const times = [
+    ...new Set(data.filter(a => a.event).map(a => a.time))
+  ].sort((a, b) => a - b);
 
   if (!times.length) {
     return {
-      message:"No inferred deaths: the log-rank test cannot be calculated."
+      message: 'No inferred deaths: the log-rank test cannot be calculated.'
     };
   }
 
-  const difference=Array(k).fill(0);
-  const covariance=Array.from({length:k}, () => Array(k).fill(0));
+  const difference = Array(k).fill(0);
+  const covariance = Array.from({ length: k }, () => Array(k).fill(0));
 
   for (const time of times) {
-    const risk=groups.map(group => data.filter(animal =>
-      animal.group===group && animal.time>=time
-    ).length);
+    const risk = groups.map(
+      group => data.filter(a => a.group === group && a.time >= time).length
+    );
 
-    const dead=groups.map(group => data.filter(animal =>
-      animal.group===group && animal.time===time && animal.event
-    ).length);
+    const dead = groups.map(
+      group => data.filter(
+        a => a.group === group && a.time === time && a.event
+      ).length
+    );
 
-    const n=risk.reduce((sum,value) => sum+value,0);
-    const d=dead.reduce((sum,value) => sum+value,0);
+    const n = risk.reduce((a, b) => a + b, 0);
+    const d = dead.reduce((a, b) => a + b, 0);
 
-    for (let i=0; i<k; i++) {
-      difference[i] += dead[i]-d*risk[i]/n;
+    for (let i = 0; i < k; i++) {
+      difference[i] += dead[i] - d * risk[i] / n;
     }
 
-    if (n>1) {
-      const factor=d*(n-d)/(n-1);
-      for (let i=0; i<k; i++) {
-        for (let j=0; j<k; j++) {
-          covariance[i][j] += factor*(
-            (i===j ? risk[i]/n : 0) -
-            risk[i]*risk[j]/(n*n)
+    if (n > 1) {
+      const factor = d * (n - d) / (n - 1);
+
+      for (let i = 0; i < k; i++) {
+        for (let j = 0; j < k; j++) {
+          covariance[i][j] += factor * (
+            (i === j ? risk[i] / n : 0) -
+            risk[i] * risk[j] / (n * n)
           );
         }
       }
     }
   }
 
-  const vector=difference.slice(0,k-1);
-  const matrix=covariance.slice(0,k-1)
-    .map(row => row.slice(0,k-1));
+  const vector = difference.slice(0, k - 1);
+  const matrix = covariance
+    .slice(0, k - 1)
+    .map(row => row.slice(0, k - 1));
 
-  const solution=solveSystem(matrix,vector);
+  const solution = solveSystem(matrix, vector);
 
   if (!solution) {
     return {
-      message:"Insufficient overlapping risk sets to calculate the overall log-rank test."
+      message:
+        'Insufficient overlapping risk sets to calculate the overall log-rank test.'
     };
   }
 
-  const chi=Math.max(0,vector.reduce(
-    (sum,value,i) => sum+value*solution[i],0
-  ));
-
-  return {chi,df:k-1,p:chiSquareTail(chi,k-1)};
-}
-
-/* Statistical results */
-function showStatistics() {
-  const panel=$("statisticsPanel");
-  panel.replaceChildren();
-
-  const data=lifespans.map(animal => ({
-    group:animal.group,time:animal.time,event:animal.event
-  }));
-
-  if (!data.length) return;
-
-  const heading=document.createElement("h2");
-  heading.textContent="Statistics";
-  panel.append(heading);
-
-  const table=document.createElement("table");
-  const head=document.createElement("thead");
-  const body=document.createElement("tbody");
-  const headingRow=document.createElement("tr");
-
-  for (const label of [
-    "Group","Animals","Deaths","Censored","Median lifespan (days)"
-  ]) {
-    const cell=document.createElement("th");
-    cell.textContent=label;
-    headingRow.append(cell);
-  }
-
-  head.append(headingRow);
-  table.append(head,body);
-
-  for (const group of [...new Set(data.map(animal => animal.group))]) {
-    const animals=data.filter(animal => animal.group===group);
-    const deaths=animals.filter(animal => animal.event).length;
-    const median=km(animals).points.find(point => point.survival<=0.5);
-    const row=document.createElement("tr");
-
-    for (const value of [
-      group,animals.length,deaths,animals.length-deaths,
-      median ? median.time.toFixed(3) : "Not reached"
-    ]) {
-      const cell=document.createElement("td");
-      cell.textContent=value;
-      row.append(cell);
-    }
-    body.append(row);
-  }
-
-  const scroll=document.createElement("div");
-  scroll.className="scroll";
-  scroll.append(table);
-  panel.append(scroll);
-
-  const test=logRank(data);
-  const result=document.createElement("p");
-
-  result.textContent=test.message || (
-    "Overall log-rank test: χ² = " + test.chi.toFixed(3) +
-    ", df = " + test.df + ", p = " +
-    (test.p<0.0001 ? test.p.toExponential(3) : test.p.toFixed(4)) + "."
+  const chi = Math.max(
+    0,
+    vector.reduce((sum, value, i) => sum + value * solution[i], 0)
   );
-  panel.append(result);
 
-  const note=document.createElement("p");
-  note.textContent =
-    "Median lifespan is estimated from the Kaplan–Meier curve. " +
-    "“Not reached” means survival did not fall to 50%. " +
-    "The log-rank test compares all factor levels and assumes independent animals; " +
-    "it does not adjust for monitor, colony or other factors. " +
-    "Results use the inactivity window selected when the curves were generated.";
-
-  panel.append(note);
+  return { chi, df: k - 1, p: chiSquareTail(chi, k - 1) };
 }
 
-/* Graph export with legend */
-function exportedGraph() {
-  const original=$("plot").querySelector("svg");
-  if (!original) throw Error("Generate the curves first.");
+function formatP(p) {
+  return Number.isFinite(p)
+    ? (p < .0001 ? p.toExponential(3) : p.toFixed(4))
+    : 'Not estimable';
+}
 
-  const svg=original.cloneNode(true);
-  const namespace="http://www.w3.org/2000/svg";
-  const groups=[...new Set(lifespans.map(animal => animal.group))];
-  const height=500+groups.length*28;
+function holmAdjust(pValues) {
+  const sorted = pValues
+    .map((value, index) => ({ value, index }))
+    .filter(item => Number.isFinite(item.value))
+    .sort((a, b) => a.value - b.value);
 
-  svg.setAttribute("xmlns",namespace);
-  svg.setAttribute("viewBox","0 0 900 "+height);
-  svg.setAttribute("width","900");
-  svg.setAttribute("height",height);
-  svg.style.minWidth="";
-  svg.style.width="";
-  svg.style.fontFamily="Arial, sans-serif";
+  const adjusted = pValues.map(() => null);
+  let previous = 0;
 
-  const background=document.createElementNS(namespace,"rect");
-  background.setAttribute("width","900");
-  background.setAttribute("height",height);
-  background.setAttribute("fill","white");
-  svg.insertBefore(background,svg.firstChild);
+  sorted.forEach((item, rank) => {
+    previous = Math.max(
+      previous,
+      Math.min(1, item.value * (pValues.length - rank))
+    );
 
-  function addText(x,y,content,colour="#17332f",size=14) {
-    const node=document.createElementNS(namespace,"text");
-    node.setAttribute("x",x);
-    node.setAttribute("y",y);
-    node.setAttribute("fill",colour);
-    node.setAttribute("font-size",size);
-    node.textContent=content;
-    svg.append(node);
-  }
-
-  addText(70,24,"Trikinetics survival · "+$("factor").value);
-  addText(70,470,
-    "Inactivity window: "+graphWindowHours+" hours · + denotes censoring",
-    "#50635e",12);
-
-  groups.forEach((group,index) => {
-    const n=lifespans.filter(animal => animal.group===group).length;
-    addText(70,503+index*28,group+" (n="+n+")",
-      "hsl("+((index*137.508)%360)+",60%,38%)");
+    adjusted[item.index] = previous;
   });
 
+  return adjusted;
+}
+
+/* Cox model with Efron's approximation for tied events. */
+function coxFit(data, reference) {
+  const levels = [
+    reference,
+    ...[...new Set(data.map(a => a.group))]
+      .filter(group => group !== reference)
+  ];
+
+  const p = levels.length - 1;
+
+  if (!p) return { message: 'At least two groups are required.' };
+
+  if (!data.some(a => a.event)) {
+    return { message: 'No deaths: model cannot be fitted.' };
+  }
+
+  const rows = data.map(animal => ({
+    ...animal,
+    x: Array.from(
+      { length: p },
+      (_, j) => +(animal.group === levels[j + 1])
+    )
+  }));
+
+  const eventTimes = [
+    ...new Set(rows.filter(a => a.event).map(a => a.time))
+  ].sort((a, b) => a - b);
+
+  function evaluate(beta) {
+    let loglik = 0;
+    const score = Array(p).fill(0);
+
+    const information = Array.from(
+      { length: p }, () => Array(p).fill(0)
+    );
+
+    for (const time of eventTimes) {
+      const risk = rows.filter(a => a.time >= time);
+      const dead = risk.filter(a => a.event && a.time === time);
+      const d = dead.length;
+
+      const s1 = Array(p).fill(0);
+      const e1 = Array(p).fill(0);
+
+      const s2 = Array.from({ length: p }, () => Array(p).fill(0));
+      const e2 = Array.from({ length: p }, () => Array(p).fill(0));
+
+      let s0 = 0;
+      let e0 = 0;
+
+      const etas = risk.map(
+        a => a.x.reduce((value, x, j) => value + x * beta[j], 0)
+      );
+
+      const shift = Math.max(...etas);
+
+      risk.forEach((animal, i) => {
+        const weight = Math.exp(etas[i] - shift);
+        const isDead = animal.event && animal.time === time;
+
+        s0 += weight;
+
+        if (isDead) {
+          e0 += weight;
+          loglik += etas[i];
+
+          for (let j = 0; j < p; j++) score[j] += animal.x[j];
+        }
+
+        for (let j = 0; j < p; j++) {
+          s1[j] += weight * animal.x[j];
+          if (isDead) e1[j] += weight * animal.x[j];
+
+          for (let k = 0; k < p; k++) {
+            s2[j][k] += weight * animal.x[j] * animal.x[k];
+
+            if (isDead) {
+              e2[j][k] += weight * animal.x[j] * animal.x[k];
+            }
+          }
+        }
+      });
+
+      for (let l = 0; l < d; l++) {
+        const fraction = l / d;
+        const denominator = s0 - fraction * e0;
+
+        loglik -= Math.log(denominator) + shift;
+
+        const mean = s1.map(
+          (value, j) => (value - fraction * e1[j]) / denominator
+        );
+
+        for (let j = 0; j < p; j++) {
+          score[j] -= mean[j];
+
+          for (let k = 0; k < p; k++) {
+            information[j][k] +=
+              (s2[j][k] - fraction * e2[j][k]) / denominator -
+              mean[j] * mean[k];
+          }
+        }
+      }
+    }
+
+    return { loglik, score, information };
+  }
+
+  let beta = Array(p).fill(0);
+  let state = evaluate(beta);
+  let converged = false;
+
+  for (let iteration = 0; iteration < 80; iteration++) {
+    const step = solveSystem(state.information, state.score);
+
+    if (!step) {
+      return {
+        message: 'Model not estimable: singular information matrix.'
+      };
+    }
+
+    let rate = 1;
+    let next;
+    let trial;
+
+    while (rate > 1e-8) {
+      trial = beta.map((value, j) => value + rate * step[j]);
+      next = evaluate(trial);
+
+      if (
+        Number.isFinite(next.loglik) &&
+        next.loglik >= state.loglik - 1e-10
+      ) break;
+
+      rate /= 2;
+    }
+
+    if (rate <= 1e-8) return { message: 'Model did not converge.' };
+
+    beta = trial;
+    state = next;
+
+    if (beta.some(value => Math.abs(value) > 25)) {
+      return {
+        message:
+          'Model not estimable: a coefficient diverged (possible separation).'
+      };
+    }
+
+    if (Math.max(...state.score.map(Math.abs)) < 1e-8) {
+      converged = true;
+      break;
+    }
+  }
+
+  if (!converged) return { message: 'Model did not converge.' };
+
+  const results = [];
+
+  for (let j = 0; j < p; j++) {
+    const unit = Array(p).fill(0);
+    unit[j] = 1;
+
+    const column = solveSystem(state.information, unit);
+
+    if (!column || column[j] <= 0) {
+      return { message: 'Model variance not estimable.' };
+    }
+
+    const se = Math.sqrt(column[j]);
+
+    if (se > 100) {
+      return {
+        message: 'Model not estimable: unstable coefficient variance.'
+      };
+    }
+
+    results.push({
+      group: levels[j + 1],
+      ref: reference,
+      beta: beta[j],
+      se,
+      hr: Math.exp(beta[j]),
+      lower: Math.exp(beta[j] - 1.959963984540054 * se),
+      upper: Math.exp(beta[j] + 1.959963984540054 * se),
+      p: chiSquareTail((beta[j] / se) ** 2, 1)
+    });
+  }
+
+  return { results, loglik: state.loglik };
+}
+
+function allCoxComparisons(data) {
+  const groups = [...new Set(data.map(a => a.group))];
+  const pairs = [];
+
+  for (let i = 0; i < groups.length - 1; i++) {
+    const fit = coxFit(data, groups[i]);
+
+    for (let j = i + 1; j < groups.length; j++) {
+      if (fit.message) {
+        pairs.push({
+          group: groups[j],
+          ref: groups[i],
+          message: fit.message
+        });
+      } else {
+        pairs.push(fit.results.find(result => result.group === groups[j]));
+      }
+    }
+  }
+
+  const adjusted = holmAdjust(pairs.map(pair => pair.p));
+
+  return pairs.map((pair, i) => ({
+    ...pair,
+    adjusted: adjusted[i]
+  }));
+}
+
+function paragraph(parent, text, tag = 'p') {
+  const element = document.createElement(tag);
+  element.textContent = text;
+  parent.append(element);
+}
+
+function tableInto(parent, headings, rows) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'scroll';
+
+  const table = document.createElement('table');
+  const head = document.createElement('thead');
+  const body = document.createElement('tbody');
+  const headerRow = document.createElement('tr');
+
+  headings.forEach(value => {
+    const cell = document.createElement('th');
+    cell.textContent = value;
+    headerRow.append(cell);
+  });
+
+  head.append(headerRow);
+
+  rows.forEach(values => {
+    const row = document.createElement('tr');
+
+    values.forEach(value => {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    });
+
+    body.append(row);
+  });
+
+  table.append(head, body);
+  wrapper.append(table);
+  parent.append(wrapper);
+}
+
+function showStatistics() {
+  statisticsPanel.replaceChildren();
+  if (!lifespans.length) return;
+
+  paragraph(statisticsPanel, 'Statistics', 'h2');
+
+  const groups = [...new Set(lifespans.map(a => a.group))];
+
+  tableInto(
+    statisticsPanel,
+    ['Group', 'Animals', 'Deaths', 'Censored', 'Median lifespan (days)'],
+    groups.map(group => {
+      const animals = lifespans.filter(a => a.group === group);
+      const deaths = animals.filter(a => a.event).length;
+      const median = km(animals).points.find(point => point.survival <= .5);
+
+      return [
+        group, animals.length, deaths, animals.length - deaths,
+        median ? median.time.toFixed(3) : 'Not reached'
+      ];
+    })
+  );
+
+  const test = logRank(lifespans);
+
+  paragraph(
+    statisticsPanel,
+    test.message ||
+      `Overall log-rank: χ² = ${test.chi.toFixed(3)}, ` +
+      `df = ${test.df}, p = ${formatP(test.p)}.`
+  );
+
+  paragraph(statisticsPanel, 'Cox proportional hazards', 'h2');
+
+  const pairs = allCoxComparisons(lifespans);
+  const results = [];
+
+  for (const pair of pairs) {
+    const referenceSelected = referenceGroups.has(pair.ref);
+    const groupSelected = referenceGroups.has(pair.group);
+
+    if (!referenceSelected && !groupSelected) continue;
+
+    if (pair.message) {
+      paragraph(
+        statisticsPanel,
+        pair.group + ' vs ' + pair.ref + ': ' + pair.message
+      );
+      continue;
+    }
+
+    /* Each unique pair appears once, regardless of selected references. */
+    results.push(
+      referenceSelected
+        ? pair
+        : {
+            ...pair,
+            group: pair.ref,
+            ref: pair.group,
+            beta: -pair.beta,
+            hr: 1 / pair.hr,
+            lower: 1 / pair.upper,
+            upper: 1 / pair.lower
+          }
+    );
+  }
+
+  if (results.length) {
+    tableInto(
+      statisticsPanel,
+      [
+        'Group', 'Reference', 'Hazard ratio', '95% CI', 'Raw p',
+        ...(groups.length > 2 ? ['Holm-adjusted p'] : [])
+      ],
+      results.map(result => [
+        result.group,
+        result.ref,
+        result.hr.toFixed(3),
+        result.lower.toFixed(3) + ' – ' + result.upper.toFixed(3),
+        formatP(result.p),
+        ...(groups.length > 2 ? [formatP(result.adjusted)] : [])
+      ])
+    );
+  } else if (!referenceGroups.size) {
+    paragraph(
+      statisticsPanel,
+      'Select at least one reference group above.'
+    );
+  }
+
+  paragraph(
+    statisticsPanel,
+    'Survival curves use Kaplan–Meier estimation. Groups are compared ' +
+    'using an overall log-rank test and Cox proportional hazards models. ' +
+    'For three or more groups, Cox p-values are Holm-adjusted across ' +
+    'all unique group comparisons.'
+  );
+}
+
+function colourFor(group, index) {
+  if (!groupColours.has(group)) {
+    groupColours.set(group, palette[index % palette.length]);
+  }
+
+  return groupColours.get(group);
+}
+
+function integerAxis(maximum) {
+  const span = Math.max(1, Math.ceil(maximum));
+  const raw = span / 6;
+  const power = 10 ** Math.floor(Math.log10(Math.max(1, raw)));
+
+  const step = [1, 2, 5, 10]
+    .map(value => value * power)
+    .find(value => value >= raw);
+
+  return { step, end: Math.ceil(span / step) * step };
+}
+
+function drawCurves() {
+  const groups = [...new Set(lifespans.map(a => a.group))];
+
+  $('plot').replaceChildren();
+  $('legend').replaceChildren();
+  settings.replaceChildren();
+
+  svgButton.disabled = pngButton.disabled = !lifespans.length;
+
+  if (!lifespans.length) {
+    showStatistics();
+    return;
+  }
+
+  for (const reference of [...referenceGroups]) {
+    if (!groups.includes(reference)) referenceGroups.delete(reference);
+  }
+
+  if (!referenceGroups.size && !settings.dataset.userCleared) {
+    referenceGroups.add(
+      groups.find(group => /^control$|untreated/i.test(group)) || groups[0]
+    );
+  }
+
+  paragraph(settings, 'Colours and reference groups', 'h2');
+  paragraph(
+    settings,
+    'Choose line colours and tick one or more Cox model baselines.'
+  );
+
+  const controls = document.createElement('div');
+  controls.style.cssText = 'display:flex;gap:20px;flex-wrap:wrap';
+  settings.append(controls);
+
+  groups.forEach((group, index) => {
+    const box = document.createElement('div');
+    const label = document.createElement('label');
+    const colour = document.createElement('input');
+    const checkbox = document.createElement('input');
+
+    colour.type = 'color';
+    colour.value = colourFor(group, index);
+    colour.setAttribute('aria-label', 'Colour for ' + group);
+
+    colour.oninput = () => {
+      groupColours.set(group, colour.value);
+      drawGraph();
+    };
+
+    checkbox.type = 'checkbox';
+    checkbox.checked = referenceGroups.has(group);
+
+    checkbox.onchange = () => {
+      if (checkbox.checked) referenceGroups.add(group);
+      else referenceGroups.delete(group);
+
+      settings.dataset.userCleared = referenceGroups.size ? '' : 'yes';
+      showStatistics();
+    };
+
+    label.append(
+      checkbox,
+      document.createTextNode(' ' + group + ' as reference')
+    );
+
+    box.append(colour, label);
+    controls.append(box);
+  });
+
+  const deaths = lifespans.filter(a => a.event).length;
+
+  $('curveStatus').textContent =
+    `${lifespans.length} animals · ${deaths} inferred deaths · ` +
+    `${lifespans.length - deaths} censored. ` +
+    'Shading: 95% CI; dashed lines: median; +: censoring.';
+
+  drawGraph();
+  showStatistics();
+}
+
+function drawGraph() {
+  const groups = [...new Set(lifespans.map(a => a.group))];
+  const namespace = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(namespace, 'svg');
+
+  svg.setAttribute('viewBox', '0 0 900 675');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute(
+    'aria-label',
+    'Kaplan–Meier survival curves with 95% confidence intervals'
+  );
+
+  svg.style.cssText =
+    'width:100%;min-width:600px;font-family:Arial,sans-serif';
+
+  function element(tag, attributes, text) {
+    const node = document.createElementNS(namespace, tag);
+
+    for (const [key, value] of Object.entries(attributes)) {
+      node.setAttribute(key, value);
+    }
+
+    if (text !== undefined) node.textContent = text;
+
+    svg.append(node);
+    return node;
+  }
+
+  element('rect', { width: 900, height: 675, fill: 'white' });
+
+  const axis = integerAxis(Math.max(...lifespans.map(a => a.time)));
+  const X = time => 85 + 770 * time / axis.end;
+  const Y = survival => 595 - 535 * survival;
+
+  for (let i = 0; i <= 5; i++) {
+    const survival = i / 5;
+    const y = Y(survival);
+
+    element('line', {
+      x1: 85, x2: 855, y1: y, y2: y, stroke: '#eeeeee'
+    });
+
+    element('text', {
+      x: 70, y: y + 5, 'text-anchor': 'end', 'font-size': 15
+    }, survival.toFixed(1));
+  }
+
+  for (let time = 0; time <= axis.end; time += axis.step) {
+    element('line', {
+      x1: X(time), x2: X(time),
+      y1: 595, y2: 602, stroke: '#333'
+    });
+
+    element('text', {
+      x: X(time), y: 624, 'text-anchor': 'middle', 'font-size': 15
+    }, time);
+  }
+
+  element('line', {
+    x1: 85, x2: 855, y1: 595, y2: 595, stroke: '#333'
+  });
+
+  element('line', {
+    x1: 85, x2: 85, y1: 60, y2: 595, stroke: '#333'
+  });
+
+  element('text', {
+    x: 470, y: 654, 'text-anchor': 'middle', 'font-size': 18
+  }, 'Time (Days)');
+
+  element('text', {
+    x: 24, y: 330,
+    transform: 'rotate(-90 24 330)',
+    'text-anchor': 'middle',
+    'font-size': 18
+  }, 'Survival Probability');
+
+  const curves = groups.map((group, index) => ({
+    group,
+    colour: colourFor(group, index),
+    curve: km(lifespans.filter(a => a.group === group))
+  }));
+
+  function step(points, key) {
+    let path = `M ${X(points[0].time)} ${Y(points[0][key])}`;
+
+    points.slice(1).forEach(point => {
+      path += ` H ${X(point.time)} V ${Y(point[key])}`;
+    });
+
+    return path;
+  }
+
+  for (const { curve, colour } of curves) {
+    const points = curve.points;
+    const last = points[points.length - 1];
+
+    let ribbon = step(points, 'upper');
+    ribbon += ` L ${X(last.time)} ${Y(last.lower)}`;
+
+    for (let i = points.length - 2; i >= 0; i--) {
+      ribbon += ` V ${Y(points[i].lower)} H ${X(points[i].time)}`;
+    }
+
+    element('path', {
+      d: ribbon + ' Z',
+      fill: colour,
+      'fill-opacity': .05,
+      stroke: 'none'
+    });
+  }
+
+  for (const { curve, colour } of curves) {
+    const median = curve.points.find(point => point.survival <= .5);
+
+    if (median) {
+      element('path', {
+        d: `M ${X(0)} ${Y(.5)} H ${X(median.time)} V ${Y(0)}`,
+        fill: 'none',
+        stroke: colour,
+        'stroke-width': 1,
+        'stroke-dasharray': '6 4'
+      });
+    }
+
+    element('path', {
+      d: step(curve.points, 'survival'),
+      fill: 'none',
+      stroke: colour,
+      'stroke-width': 3.4
+    });
+
+    for (const point of curve.censors) {
+      element('path', {
+        d:
+          `M ${X(point.time) - 4} ${Y(point.survival)} h 8 ` +
+          `M ${X(point.time)} ${Y(point.survival) - 4} v 8`,
+        stroke: colour,
+        'stroke-width': 1.5
+      });
+    }
+  }
+
+  const columns = Math.ceil(groups.length / 10);
+  const rows = Math.min(10, groups.length);
+  const width = Math.min(700, columns * 170);
+  const left = Math.max(100, 855 - width);
+  const top = 72;
+
+  element('rect', {
+    x: left - 10,
+    y: top - 18,
+    width: width + 15,
+    height: rows * 24 + 12,
+    fill: 'white',
+    'fill-opacity': .85
+  });
+
+  curves.forEach(({ group, colour }, index) => {
+    const x = left + Math.floor(index / 10) * 170;
+    const y = top + (index % 10) * 24;
+
+    element('line', {
+      x1: x, x2: x + 25, y1: y, y2: y,
+      stroke: colour, 'stroke-width': 3.4
+    });
+
+    element('text', {
+      x: x + 32, y: y + 5, 'font-size': 14
+    }, group);
+  });
+
+  $('plot').replaceChildren(svg);
+}
+
+function exportedGraph() {
+  const original = $('plot').querySelector('svg');
+  if (!original) throw Error('Generate curves first.');
+
+  const svg = original.cloneNode(true);
+
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  svg.setAttribute('width', '900');
+  svg.setAttribute('height', '675');
+
+  svg.style.width = '';
+  svg.style.minWidth = '';
+
   return {
-    text:new XMLSerializer().serializeToString(svg),
-    height
+    text: new XMLSerializer().serializeToString(svg),
+    height: 675
   };
 }
 
-function saveBlob(blob,filename) {
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");
-  link.href=url;
-  link.download=filename;
+function saveBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = name;
+
   document.body.append(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url),2000);
+
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-$("downloadSvg").onclick = () => {
+svgButton.onclick = () => {
   try {
-    const graph=exportedGraph();
-    saveBlob(new Blob([graph.text],{
-      type:"image/svg+xml;charset=utf-8"
-    }),"trikinetics_survival.svg");
+    const graph = exportedGraph();
+
+    saveBlob(
+      new Blob([graph.text], { type: 'image/svg+xml;charset=utf-8' }),
+      'trikinetics_survival.svg'
+    );
   } catch (error) {
-    $("curveStatus").textContent=error.message;
+    $('curveStatus').textContent = error.message;
   }
 };
 
-$("downloadPng").onclick = async () => {
-  $("downloadPng").disabled=true;
+pngButton.onclick = async () => {
+  pngButton.disabled = true;
 
   try {
-    const graph=exportedGraph();
-    const url=URL.createObjectURL(new Blob([graph.text],{
-      type:"image/svg+xml;charset=utf-8"
-    }));
+    const graph = exportedGraph();
+
+    const url = URL.createObjectURL(
+      new Blob([graph.text], { type: 'image/svg+xml;charset=utf-8' })
+    );
 
     try {
-      const image=new Image();
+      const image = new Image();
 
-      await new Promise((resolve,reject) => {
-        image.onload=resolve;
-        image.onerror=() => reject(
-          Error("Could not render graph. Try SVG instead.")
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () => reject(
+          Error('Could not render graph. Try SVG instead.')
         );
-        image.src=url;
+        image.src = url;
       });
 
-      const canvas=document.createElement("canvas");
-      canvas.width=1800;
-      canvas.height=graph.height*2;
-      const context=canvas.getContext("2d");
-      context.drawImage(image,0,0,canvas.width,canvas.height);
+      const canvas = document.createElement('canvas');
+      canvas.width = 1800;
+      canvas.height = graph.height * 2;
 
-      const blob=await new Promise(resolve =>
-        canvas.toBlob(resolve,"image/png")
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      const blob = await new Promise(
+        resolve => canvas.toBlob(resolve, 'image/png')
       );
 
-      if (!blob) throw Error("Could not create PNG.");
-      saveBlob(blob,"trikinetics_survival.png");
+      if (!blob) throw Error('Could not create PNG.');
+
+      saveBlob(blob, 'trikinetics_survival.png');
     } finally {
       URL.revokeObjectURL(url);
     }
   } catch (error) {
-    $("curveStatus").textContent=error.message;
+    $('curveStatus').textContent = error.message;
   } finally {
-    $("downloadPng").disabled=!$("plot").querySelector("svg");
+    pngButton.disabled = !$('plot').querySelector('svg');
   }
 };
 </script>
