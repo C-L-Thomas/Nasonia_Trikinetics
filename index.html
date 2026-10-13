@@ -4,99 +4,45 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Trikinetics · Data loader</title>
-
 <style>
-:root {
-  font-family: system-ui, sans-serif;
-  color: #17332f;
-  background: #f2f6f4;
-}
-* { box-sizing: border-box; }
-body {
-  max-width: 1080px;
-  margin: auto;
-  padding: 40px 24px;
-}
-h1 { font-size: 38px; margin: 8px 0; }
-h2 { font-size: 20px; }
-p { line-height: 1.6; color: #50635e; }
-.tag {
-  letter-spacing: 2px;
-  font-size: 12px;
-  color: #39786b;
-}
-section {
-  background: white;
-  border: 1px solid #d8e3de;
-  border-radius: 16px;
-  padding: 24px;
-  margin: 20px 0;
-}
-button, .pick {
-  display: inline-block;
-  background: #226959;
-  color: white;
-  border: 0;
-  border-radius: 8px;
-  padding: 12px 18px;
-  font: inherit;
-  cursor: pointer;
-  margin: 5px 8px 5px 0;
-}
-button:disabled { opacity: .45; cursor: default; }
-.secondary { background: #e7eeea; color: #23483e; }
-select, input[type=number] {
-  padding: 10px;
-  border: 1px solid #bccfc5;
-  border-radius: 7px;
-  font: inherit;
-  max-width: 100%;
-}
-label { display: block; margin: 12px 0; }
-label.pick { display: inline-block; }
-input[type=file] { display: none; }
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 13px;
-}
-td, th {
-  text-align: left;
-  padding: 10px;
-  border-bottom: 1px solid #e2eae5;
-  white-space: nowrap;
-}
-th { background: #f3f7f4; }
-.scroll { overflow: auto; max-height: 460px; }
-.status {
-  white-space: pre-wrap;
-  padding: 12px;
-  background: #f2f6f4;
-  border-radius: 8px;
-}
-.error { color: #a32b2b; }
-.stats { display: flex; gap: 32px; flex-wrap: wrap; }
-.stats strong { font-size: 28px; display: block; }
-progress { width: 100%; accent-color: #226959; }
-summary { cursor: pointer; }
-footer { font-size: 13px; color: #62736b; }
+:root{font-family:system-ui,sans-serif;color:#17332f;background:#f2f6f4}
+*{box-sizing:border-box}
+body{max-width:1080px;margin:auto;padding:40px 24px}
+h1{font-size:38px;margin:8px 0}
+h2{font-size:20px}
+p{line-height:1.6;color:#50635e}
+.tag{letter-spacing:2px;font-size:12px;color:#39786b}
+section{background:white;border:1px solid #d8e3de;border-radius:16px;padding:24px;margin:20px 0}
+button,.pick{display:inline-block;background:#226959;color:white;border:0;border-radius:8px;padding:12px 18px;font:inherit;cursor:pointer;margin:5px 8px 5px 0}
+button:disabled{opacity:.45;cursor:default}
+.secondary{background:#e7eeea;color:#23483e}
+select,input[type=number]{padding:10px;border:1px solid #bccfc5;border-radius:7px;font:inherit;max-width:100%}
+label{display:block;margin:12px 0}
+label.pick{display:inline-block}
+input[type=file]{display:none}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{text-align:left;padding:10px;border-bottom:1px solid #e2eae5;white-space:nowrap}
+th{background:#f3f7f4}
+.scroll{overflow:auto;max-height:460px}
+.status{white-space:pre-wrap;padding:12px;background:#f2f6f4;border-radius:8px}
+.error{color:#a32b2b}
+.stats{display:flex;gap:32px;flex-wrap:wrap}
+.stats strong{font-size:28px;display:block}
+progress{width:100%;accent-color:#226959}
+summary{cursor:pointer}
+footer{font-size:13px;color:#62736b}
 </style>
 </head>
-
 <body>
+
 <div class="tag">NASONIA · STUDENT TOOLS</div>
 <h1>Trikinetics data loader</h1>
-<p>
-  Load monitor recordings and explore one experimental factor.
-  Your files stay in this browser.
-</p>
+<p>Load monitor recordings and explore one experimental factor. Your files stay in this browser.</p>
 
+<div id="loadPage">
 <section>
   <h2>1 · Choose your experiment files</h2>
-  <p>
-    Select the folder containing <b>metadata.csv</b> and files such as
-    <b>Monitor74.txt</b>. Alternatively, select those files together.
-  </p>
+  <p>Select the folder containing <b>metadata.csv</b> and files such as <b>Monitor74.txt</b>. Alternatively, select those files together.</p>
 
   <label class="pick">
     Choose folder
@@ -113,31 +59,23 @@ footer { font-size: 13px; color: #62736b; }
 
 <section>
   <h2>2 · Choose one factor</h2>
-
-  <label for="factor">
-    Factor to retain alongside monitor, position and dates
-  </label>
-
+  <label for="factor">Factor to retain alongside monitor, position and dates</label>
   <select id="factor" disabled>
     <option value="">Choose files first</option>
   </select>
 
-  <p id="levels">
-    All other experimental metadata columns will be omitted
-    from the loaded output.
-  </p>
+  <p id="levels">All other experimental metadata columns will be omitted from the loaded output.</p>
 
   <details>
     <summary>Monitor file format</summary>
     <p>
-      This first version expects a standard DAM text file:
-      recording number, date and time in columns 1–3, with
-      32 activity channels starting at column 11.
+      This version expects a standard DAM text file:
+      recording number, date and time in columns 1–3,
+      with 32 activity channels starting at column 11.
       Adjust the activity column if your export differs.
       Only normal activity records (status 1, Ct) are loaded;
       monitor status/event rows are skipped.
-      Dates such as 21 Aug 26, 21/08/2026 and 2026-08-21
-      are supported.
+      Dates such as 21 Aug 26, 21/08/2026 and 2026-08-21 are supported.
     </p>
 
     <label>
@@ -148,7 +86,6 @@ footer { font-size: 13px; color: #62736b; }
 
   <button id="load" disabled>Load data</button>
   <progress id="progress" value="0" max="1" hidden></progress>
-
   <div id="status" role="status" aria-live="polite"></div>
 </section>
 
@@ -158,11 +95,11 @@ footer { font-size: 13px; color: #62736b; }
 
   <p>
     Summary per animal within its metadata date window.
-    No death detection or lifespan analysis is performed in this version.
     End time means the last loaded recording.
+    Continue to the next page to generate lifespan curves.
   </p>
 
-  <button id="download">Download loading summary CSV</button>
+  <button id="next">Next: Lifespan curves →</button>
 
   <div class="scroll">
     <table>
@@ -171,10 +108,66 @@ footer { font-size: 13px; color: #62736b; }
     </table>
   </div>
 </section>
+</div>
+
+<div id="curvePage" hidden>
+<section>
+  <button id="back" class="secondary">← Back to loaded data</button>
+  <h2>Lifespan curves</h2>
+  <p>
+    Generate Kaplan–Meier curves for your selected factor.
+    Time is measured from each animal’s metadata start date.
+  </p>
+
+  <label>
+    Inactivity confirmation window (hours)
+    <input id="windowHours" type="number" min="1" max="168" value="24">
+  </label>
+
+  <p>
+    This version infers death at the start of the first fully recorded
+    period with zero beam crossings for the chosen duration.
+    Any later movement is ignored.
+    Animals without a confirmed period are censored at their last recording.
+    This rule differs from the rolling low-activity method in your R app.
+  </p>
+
+  <button id="generate">Generate curves</button>
+  <div id="curveStatus" class="status" role="status"></div>
+  <div id="plot" class="scroll"></div>
+  <div id="legend"></div>
+
+  <h2>Review animals</h2>
+  <p>
+    Animals with no activity, no records, or recording gaps start excluded.
+    Animals whose recordings begin late also start excluded.
+    Review each animal before interpreting the curves.
+    You can exclude animals or change an inferred death to censoring
+    at the end of its recording.
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Monitor</th>
+          <th>Position</th>
+          <th>Group</th>
+          <th>Time (days)</th>
+          <th>Automatic result</th>
+          <th>Use in curve</th>
+        </tr>
+      </thead>
+      <tbody id="review"></tbody>
+    </table>
+  </div>
+</section>
+</div>
 
 <footer>
-  Works without installing R. For folders, use a current Chrome or Edge
-  browser on Mac or Windows; individual file selection is also available.
+  Works without installing R.
+  For folders, use a current Chrome or Edge browser on Mac or Windows;
+  individual file selection is also available.
 </footer>
 
 <script>
@@ -193,8 +186,10 @@ let selected = [];
 let metadata = [];
 let headers = [];
 let output = [];
+let traces = [];
+let lifespans = [];
 
-/* Read CSV, including quoted fields and Windows line endings. */
+/* CSV parser: supports quoted fields and Windows line endings. */
 function csvParse(s) {
   s = s.replace(/^\uFEFF/, "");
 
@@ -241,11 +236,7 @@ function csvParse(s) {
   return rows;
 }
 
-/*
-  Parse recording timestamps consistently across operating systems.
-  UTC is used internally to compare the recorded clock values without
-  introducing the student's computer timezone.
-*/
+/* Use the recorded clock values consistently on Mac and Windows. */
 function stamp(date, time = "00:00:00") {
   let year, month, day;
 
@@ -331,10 +322,16 @@ function say(message, error = false) {
 
 function invalidate() {
   output = [];
+  traces = [];
+  lifespans = [];
+
   $("results").hidden = true;
+  $("curvePage").hidden = true;
+  $("loadPage").hidden = false;
+  $("plot").replaceChildren();
 }
 
-/* Inspect selected files and populate the factor selector. */
+/* Read metadata and offer one factor. */
 async function choose(files) {
   selected = [...files];
   metadata = [];
@@ -429,7 +426,7 @@ $("factor").onchange = () => {
 
 $("offset").onchange = invalidate;
 
-/* Stream monitor files in chunks rather than reading them all at once. */
+/* Read monitor files in chunks. */
 async function* lines(file) {
   const reader = file.stream().getReader();
   const decoder = new TextDecoder();
@@ -461,6 +458,7 @@ async function* lines(file) {
   }
 }
 
+/* Load the selected positions inside their metadata date windows. */
 async function run() {
   invalidate();
 
@@ -562,7 +560,9 @@ async function run() {
         start,
         stop,
         first: Infinity,
-        last: -Infinity
+        last: -Infinity,
+        times: [],
+        counts: []
       };
 
       if (!groups.has(row.file)) groups.set(row.file, []);
@@ -587,7 +587,6 @@ async function run() {
           ? line.split("\t").map(value => value.trim())
           : line.trim().split(/\s+/);
 
-        // Handle space-separated exports with dates such as "21 Aug 26".
         if (
           !line.includes("\t") &&
           /^[A-Za-z]{3}$/.test(parts[2] || "")
@@ -603,7 +602,6 @@ async function run() {
           );
         }
 
-        // Skip monitor status/event records.
         if (parts[3] !== "1") continue;
 
         if (parts[7] !== "Ct") {
@@ -638,6 +636,8 @@ async function run() {
             );
           }
 
+          animal.times.push(time);
+          animal.counts.push(activity);
           animal.records++;
           animal.activity_total += activity;
           animal.first = Math.min(animal.first, time);
@@ -662,6 +662,17 @@ async function run() {
         animal.first_record = fmt(animal.first);
         animal.last_record = fmt(animal.last);
 
+        traces.push({
+          file: animal.file,
+          position: animal.region_id,
+          group: animal[factor] || "(blank)",
+          start: animal.start,
+          times: animal.times,
+          counts: animal.counts
+        });
+
+        delete animal.times;
+        delete animal.counts;
         delete animal.first;
         delete animal.last;
         delete animal.start;
@@ -703,7 +714,7 @@ async function run() {
 
 $("load").onclick = run;
 
-/* Display loading summaries without interpreting lifespan. */
+/* Loading summary. */
 function render() {
   $("results").hidden = false;
   $("stats").replaceChildren();
@@ -753,36 +764,381 @@ function render() {
   }
 }
 
-function csvCell(value) {
-  const text = String(value ?? "");
-  return '"' + text.replace(/"/g, '""') + '"';
+/* Infer death from a confirmed zero-activity period. */
+function infer(trace, hours) {
+  const times = trace.times;
+  const counts = trace.counts;
+  const windowMs = hours * 3600000;
+
+  if (!times.length) {
+    return {
+      time: 0, end: 0, event: false,
+      reason: "No records", excluded: true
+    };
+  }
+
+  const end =
+    (times[times.length - 1] - trace.start) / 86400000;
+
+  if (times.some((value, i) => i && value <= times[i - 1])) {
+    return {
+      time: end, end, event: false,
+      reason: "Duplicate or unordered timestamps",
+      excluded: true
+    };
+  }
+
+  const differences = times.slice(1)
+    .map((value, i) => value - times[i])
+    .sort((a, b) => a - b);
+
+  const interval = differences.length
+    ? differences[Math.floor(differences.length / 2)]
+    : 0;
+
+  if (!interval) {
+    return {
+      time: end, end, event: false,
+      reason: "Too few records", excluded: true
+    };
+  }
+
+  if (times[0] - trace.start > interval * 1.5) {
+    return {
+      time: end, end, event: false,
+      reason: "Recording begins late", excluded: true
+    };
+  }
+
+  if (!counts.some(value => value > 0)) {
+    return {
+      time: end, end, event: false,
+      reason: "No activity recorded", excluded: true
+    };
+  }
+
+  if (
+    times.some(
+      (value, i) => i && value - times[i - 1] > interval * 1.5
+    )
+  ) {
+    return {
+      time: end, end, event: false,
+      reason: "Recording gap", excluded: true
+    };
+  }
+
+  let zeroStart = null;
+
+  for (let i = 0; i < times.length; i++) {
+    if (counts[i] > 0) {
+      zeroStart = null;
+      continue;
+    }
+
+    if (zeroStart === null) zeroStart = times[i];
+
+    if (times[i] - zeroStart >= windowMs) {
+      return {
+        time: (zeroStart - trace.start) / 86400000,
+        end,
+        event: true,
+        reason: "Confirmed inactivity",
+        excluded: false
+      };
+    }
+  }
+
+  return {
+    time: end, end, event: false,
+    reason: "No confirmed death", excluded: false
+  };
 }
 
-$("download").onclick = () => {
-  if (!output.length) return;
+/* Kaplan–Meier estimator, including tied deaths and censoring. */
+function km(data) {
+  const ordered = [...data].sort((a, b) => a.time - b.time);
 
-  const columns = Object.keys(output[0]);
+  let risk = ordered.length;
+  let survival = 1;
 
-  const text = [
-    columns.map(csvCell).join(","),
-    ...output.map(row =>
-      columns.map(column => csvCell(row[column])).join(",")
-    )
-  ].join("\r\n");
+  const points = [{ time: 0, survival: 1 }];
+  const censors = [];
 
-  const url = URL.createObjectURL(
-    new Blob(["\uFEFF" + text], {
-      type: "text/csv;charset=utf-8"
-    })
+  for (let i = 0; i < ordered.length;) {
+    const time = ordered[i].time;
+    let dead = 0;
+    let censored = 0;
+
+    while (i < ordered.length && ordered[i].time === time) {
+      if (ordered[i].event) dead++;
+      else censored++;
+      i++;
+    }
+
+    if (dead) {
+      survival *= 1 - dead / risk;
+      points.push({ time, survival });
+    }
+
+    if (censored) censors.push({ time, survival });
+
+    risk -= dead + censored;
+  }
+
+  if (ordered.length) {
+    points.push({
+      time: ordered[ordered.length - 1].time,
+      survival
+    });
+  }
+
+  return { points, censors };
+}
+
+/* Page navigation. */
+$("next").onclick = () => {
+  $("loadPage").hidden = true;
+  $("curvePage").hidden = false;
+
+  if (!lifespans.length) generate();
+};
+
+$("back").onclick = () => {
+  $("curvePage").hidden = true;
+  $("loadPage").hidden = false;
+};
+
+$("generate").onclick = generate;
+
+/* Generate automatic classifications and the review table. */
+function generate() {
+  const hours = Number($("windowHours").value);
+
+  if (!Number.isFinite(hours) || hours < 1 || hours > 168) {
+    $("curveStatus").textContent =
+      "Choose a window between 1 and 168 hours.";
+    return;
+  }
+
+  lifespans = traces.map(trace => ({
+    ...trace,
+    ...infer(trace, hours)
+  }));
+
+  $("review").replaceChildren();
+
+  lifespans.forEach(animal => {
+    animal.use = animal.excluded
+      ? "exclude"
+      : animal.event ? "death" : "censor";
+
+    const row = document.createElement("tr");
+
+    for (const value of [
+      animal.file,
+      animal.position,
+      animal.group,
+      animal.time.toFixed(3),
+      animal.reason
+    ]) {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    }
+
+    const cell = document.createElement("td");
+    const select = document.createElement("select");
+
+    select.setAttribute(
+      "aria-label",
+      animal.file + " position " + animal.position
+    );
+
+    select.append(new Option("Exclude", "exclude"));
+
+    if (animal.event && !animal.excluded) {
+      select.append(new Option("Inferred death", "death"));
+    }
+
+    if (!animal.excluded) {
+      select.append(
+        new Option("Censor at recording end", "censor")
+      );
+    }
+
+    select.value = animal.use;
+
+    select.onchange = () => {
+      animal.use = select.value;
+
+      row.children[3].textContent = (
+        animal.use === "censor" ? animal.end : animal.time
+      ).toFixed(3);
+
+      drawCurves();
+    };
+
+    cell.append(select);
+    row.append(cell);
+    $("review").append(row);
+  });
+
+  drawCurves();
+}
+
+/* Draw survival curves and censoring marks using SVG. */
+function drawCurves() {
+  const included = lifespans
+    .filter(animal => animal.use !== "exclude")
+    .map(animal => ({
+      group: animal.group,
+      time: animal.use === "censor" ? animal.end : animal.time,
+      event: animal.use === "death"
+    }));
+
+  const deaths = included.filter(animal => animal.event).length;
+
+  $("curveStatus").textContent =
+    included.length + " included · " +
+    deaths + " inferred deaths · " +
+    (included.length - deaths) + " censored · " +
+    (lifespans.length - included.length) + " excluded. " +
+    "Censoring marks are shown as +. " +
+    "Changing the window and regenerating resets review choices.";
+
+  $("plot").replaceChildren();
+  $("legend").replaceChildren();
+
+  if (!included.length) {
+    $("curveStatus").textContent += " No eligible animals to plot.";
+    return;
+  }
+
+  const namespace = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(namespace, "svg");
+
+  svg.setAttribute("viewBox", "0 0 900 450");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Kaplan–Meier survival curves");
+  svg.style.minWidth = "600px";
+  svg.style.width = "100%";
+
+  function element(tag, attributes, text) {
+    const node = document.createElementNS(namespace, tag);
+
+    for (const [name, value] of Object.entries(attributes)) {
+      node.setAttribute(name, value);
+    }
+
+    if (text !== undefined) node.textContent = text;
+
+    svg.append(node);
+    return node;
+  }
+
+  const maximum = Math.max(
+    1, ...included.map(animal => animal.time)
   );
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "trikinetics_loading_summary.csv";
-  link.click();
+  const X = time => 70 + 790 * time / maximum;
+  const Y = survival => 385 - 340 * survival;
 
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
+  for (let i = 0; i <= 5; i++) {
+    const probability = i / 5;
+    const y = Y(probability);
+
+    element("line", {
+      x1: 70, x2: 860,
+      y1: y, y2: y,
+      stroke: "#e2eae5"
+    });
+
+    element("text", {
+      x: 55, y: y + 4,
+      "text-anchor": "end",
+      "font-size": 12
+    }, (probability * 100).toFixed(0) + "%");
+
+    const time = maximum * i / 5;
+
+    element("text", {
+      x: X(time), y: 408,
+      "text-anchor": "middle",
+      "font-size": 12
+    }, time.toFixed(1));
+  }
+
+  element("line", {
+    x1: 70, x2: 860,
+    y1: 385, y2: 385,
+    stroke: "#17332f"
+  });
+
+  element("line", {
+    x1: 70, x2: 70,
+    y1: 45, y2: 385,
+    stroke: "#17332f"
+  });
+
+  element("text", {
+    x: 465, y: 440,
+    "text-anchor": "middle",
+    "font-size": 14
+  }, "Time from metadata start (days)");
+
+  element("text", {
+    x: 22, y: 210,
+    transform: "rotate(-90 22 210)",
+    "text-anchor": "middle",
+    "font-size": 14
+  }, "Survival probability");
+
+  const groups = [
+    ...new Set(included.map(animal => animal.group))
+  ];
+
+  groups.forEach((group, index) => {
+    const data = included.filter(animal => animal.group === group);
+    const curve = km(data);
+
+    const colour =
+      "hsl(" + ((index * 137.508) % 360) + ",60%,38%)";
+
+    let path = "M " + X(0) + " " + Y(1);
+
+    for (const point of curve.points.slice(1)) {
+      path +=
+        " H " + X(point.time) +
+        " V " + Y(point.survival);
+    }
+
+    element("path", {
+      d: path,
+      fill: "none",
+      stroke: colour,
+      "stroke-width": 2.5
+    });
+
+    for (const point of curve.censors) {
+      element("path", {
+        d:
+          "M " + (X(point.time) - 4) + " " + Y(point.survival) +
+          " h 8 M " + X(point.time) + " " +
+          (Y(point.survival) - 4) + " v 8",
+        stroke: colour,
+        "stroke-width": 1.5
+      });
+    }
+
+    const legend = document.createElement("div");
+    legend.style.color = colour;
+    legend.textContent = group + " · n=" + data.length;
+    $("legend").append(legend);
+  });
+
+  $("plot").append(svg);
+}
 </script>
 </body>
 </html>
