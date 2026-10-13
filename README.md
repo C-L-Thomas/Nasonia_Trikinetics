@@ -1,3 +1,3 @@
 ## Trikinetics lifespan tool
 
-[Open the Trikinetics data loader](https://github.com/C-L-Thomas/Nasonia_Trikinetics)
+[Open the Trikinetics data loader](https://c-l-thomas.github.io/Nasonia_Trikinetics/)
