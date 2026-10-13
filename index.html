@@ -3,171 +3,231 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trikinetics · Data loader</title>
+<title>Trikinetics · Lifespan tool</title>
+
 <style>
-:root{font-family:system-ui,sans-serif;color:#17332f;background:#f2f6f4}
-*{box-sizing:border-box}
-body{max-width:1080px;margin:auto;padding:40px 24px}
-h1{font-size:38px;margin:8px 0}
-h2{font-size:20px}
-p{line-height:1.6;color:#50635e}
-.tag{letter-spacing:2px;font-size:12px;color:#39786b}
-section{background:white;border:1px solid #d8e3de;border-radius:16px;padding:24px;margin:20px 0}
-button,.pick{display:inline-block;background:#226959;color:white;border:0;border-radius:8px;padding:12px 18px;font:inherit;cursor:pointer;margin:5px 8px 5px 0}
-button:disabled{opacity:.45;cursor:default}
-.secondary{background:#e7eeea;color:#23483e}
-select,input[type=number]{padding:10px;border:1px solid #bccfc5;border-radius:7px;font:inherit;max-width:100%}
-label{display:block;margin:12px 0}
-label.pick{display:inline-block}
-input[type=file]{display:none}
-table{border-collapse:collapse;width:100%;font-size:13px}
-td,th{text-align:left;padding:10px;border-bottom:1px solid #e2eae5;white-space:nowrap}
-th{background:#f3f7f4}
-.scroll{overflow:auto;max-height:460px}
-.status{white-space:pre-wrap;padding:12px;background:#f2f6f4;border-radius:8px}
-.error{color:#a32b2b}
-.stats{display:flex;gap:32px;flex-wrap:wrap}
-.stats strong{font-size:28px;display:block}
-progress{width:100%;accent-color:#226959}
-summary{cursor:pointer}
-footer{font-size:13px;color:#62736b}
+:root {
+  font-family: system-ui, sans-serif;
+  color: #17332f;
+  background: #f2f6f4;
+}
+* { box-sizing: border-box; }
+body {
+  max-width: 1080px;
+  margin: auto;
+  padding: 40px 24px;
+}
+h1 { font-size: 38px; margin: 8px 0; }
+h2 { font-size: 20px; }
+p { line-height: 1.6; color: #50635e; }
+.tag {
+  letter-spacing: 2px;
+  font-size: 12px;
+  color: #39786b;
+}
+section {
+  background: white;
+  border: 1px solid #d8e3de;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 0;
+}
+button, .pick {
+  display: inline-block;
+  background: #226959;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font: inherit;
+  cursor: pointer;
+  margin: 5px 8px 5px 0;
+}
+button:disabled { opacity: .45; cursor: default; }
+.secondary { background: #e7eeea; color: #23483e; }
+select, input[type=number] {
+  padding: 10px;
+  border: 1px solid #bccfc5;
+  border-radius: 7px;
+  font: inherit;
+  max-width: 100%;
+}
+label { display: block; margin: 12px 0; }
+label.pick { display: inline-block; }
+input[type=file] { display: none; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+td, th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #e2eae5;
+  white-space: nowrap;
+}
+th { background: #f3f7f4; }
+.scroll { overflow: auto; max-height: 460px; }
+.status {
+  white-space: pre-wrap;
+  padding: 12px;
+  background: #f2f6f4;
+  border-radius: 8px;
+}
+.error { color: #a32b2b; }
+.stats { display: flex; gap: 32px; flex-wrap: wrap; }
+.stats strong { font-size: 28px; display: block; }
+progress { width: 100%; accent-color: #226959; }
+summary { cursor: pointer; }
+footer { font-size: 13px; color: #62736b; }
 </style>
 </head>
-<body>
 
+<body>
 <div class="tag">NASONIA · STUDENT TOOLS</div>
-<h1>Trikinetics data loader</h1>
-<p>Load monitor recordings and explore one experimental factor. Your files stay in this browser.</p>
+<h1>Trikinetics lifespan tool</h1>
+<p>
+  Load monitor recordings and compare one experimental factor.
+  Your files stay in this browser.
+</p>
 
 <div id="loadPage">
-<section>
-  <h2>1 · Choose your experiment files</h2>
-  <p>Select the folder containing <b>metadata.csv</b> and files such as <b>Monitor74.txt</b>. Alternatively, select those files together.</p>
-
-  <label class="pick">
-    Choose folder
-    <input id="folder" type="file" webkitdirectory multiple>
-  </label>
-
-  <label class="pick secondary">
-    Choose files
-    <input id="files" type="file" accept=".csv,.txt" multiple>
-  </label>
-
-  <div id="inventory" class="status">No files selected.</div>
-</section>
-
-<section>
-  <h2>2 · Choose one factor</h2>
-  <label for="factor">Factor to retain alongside monitor, position and dates</label>
-  <select id="factor" disabled>
-    <option value="">Choose files first</option>
-  </select>
-
-  <p id="levels">All other experimental metadata columns will be omitted from the loaded output.</p>
-
-  <details>
-    <summary>Monitor file format</summary>
+  <section>
+    <h2>1 · Choose your experiment files</h2>
     <p>
-      This version expects a standard DAM text file:
-      recording number, date and time in columns 1–3,
-      with 32 activity channels starting at column 11.
-      Adjust the activity column if your export differs.
-      Only normal activity records (status 1, Ct) are loaded;
-      monitor status/event rows are skipped.
-      Dates such as 21 Aug 26, 21/08/2026 and 2026-08-21 are supported.
+      Select the folder containing <b>metadata.csv</b> and files such as
+      <b>Monitor74.txt</b>. Alternatively, select those files together.
     </p>
 
-    <label>
-      First activity column (counting from 1)
-      <input id="offset" type="number" min="4" max="100" value="11">
+    <label class="pick">
+      Choose folder
+      <input id="folder" type="file" webkitdirectory multiple>
     </label>
-  </details>
 
-  <button id="load" disabled>Load data</button>
-  <progress id="progress" value="0" max="1" hidden></progress>
-  <div id="status" role="status" aria-live="polite"></div>
-</section>
+    <label class="pick secondary">
+      Choose files
+      <input id="files" type="file" accept=".csv,.txt" multiple>
+    </label>
 
-<section id="results" hidden>
-  <h2>3 · Loaded data</h2>
-  <div id="stats" class="stats"></div>
+    <div id="inventory" class="status">No files selected.</div>
+  </section>
 
-  <p>
-    Summary per animal within its metadata date window.
-    End time means the last loaded recording.
-    Continue to the next page to generate lifespan curves.
-  </p>
+  <section>
+    <h2>2 · Choose one factor</h2>
 
-  <button id="next">Next: Lifespan curves →</button>
+    <label for="factor">
+      Factor to retain alongside monitor, position and dates
+    </label>
 
-  <div class="scroll">
-    <table>
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
-</section>
+    <select id="factor" disabled>
+      <option value="">Choose files first</option>
+    </select>
+
+    <p id="levels">
+      All other experimental metadata columns will be omitted
+      from the loaded output.
+    </p>
+
+    <details>
+      <summary>Monitor file format</summary>
+      <p>
+        Standard DAM text files are expected, with recording number,
+        date and time in columns 1–3 and 32 activity channels starting
+        at column 11. Adjust the activity column if your export differs.
+        Only normal activity records (status 1, Ct) are loaded.
+        Monitor status/event rows are skipped.
+        Supported dates include 21 Aug 26, 21/08/2026 and 2026-08-21.
+      </p>
+
+      <label>
+        First activity column (counting from 1)
+        <input id="offset" type="number" min="4" max="100" value="11">
+      </label>
+    </details>
+
+    <button id="load" disabled>Load data</button>
+    <progress id="progress" value="0" max="1" hidden></progress>
+
+    <div id="status" role="status" aria-live="polite"></div>
+  </section>
+
+  <section id="results" hidden>
+    <h2>3 · Loaded data</h2>
+    <div id="stats" class="stats"></div>
+
+    <p>
+      Summary per animal within its metadata date window.
+      End time means the last loaded recording.
+      Continue to the next page to generate lifespan curves.
+    </p>
+
+    <button id="next">Next: Lifespan curves →</button>
+
+    <div class="scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <div id="curvePage" hidden>
-<section>
-  <button id="back" class="secondary">← Back to loaded data</button>
-  <h2>Lifespan curves</h2>
-  <p>
-    Generate Kaplan–Meier curves for your selected factor.
-    Time is measured from each animal’s metadata start date.
-  </p>
+  <section>
+    <button id="back" class="secondary">← Back to loaded data</button>
 
-  <label>
-    Inactivity confirmation window (hours)
-    <input id="windowHours" type="number" min="1" max="168" value="24">
-  </label>
+    <h2>Lifespan curves</h2>
+    <p>
+      Generate Kaplan–Meier curves for your selected factor.
+      Time is measured from each animal’s metadata start date.
+    </p>
 
-  <p>
-    This version infers death at the start of the first fully recorded
-    period with zero beam crossings for the chosen duration.
-    Any later movement is ignored.
-    Animals without a confirmed period are censored at their last recording.
-    This rule differs from the rolling low-activity method in your R app.
-  </p>
+    <label>
+      Inactivity confirmation window (hours)
+      <input id="windowHours" type="number" min="1" max="168" value="24">
+    </label>
 
-  <button id="generate">Generate curves</button>
-  <div id="curveStatus" class="status" role="status"></div>
-  <div id="plot" class="scroll"></div>
-  <div id="legend"></div>
+    <p>
+      Death is inferred at the start of the first uninterrupted recorded
+      period with zero beam crossings for the chosen duration.
+      Any later movement is ignored.
+      Animals without a confirmed death are censored at their last recording.
+      This rule differs from the rolling low-activity method in the R app.
+    </p>
 
-  <h2>Review animals</h2>
-  <p>
-    Animals with no activity, no records, or recording gaps start excluded.
-    Animals whose recordings begin late also start excluded.
-    Review each animal before interpreting the curves.
-    You can exclude animals or change an inferred death to censoring
-    at the end of its recording.
-  </p>
+    <button id="generate">Generate curves</button>
 
-  <div class="scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>Monitor</th>
-          <th>Position</th>
-          <th>Group</th>
-          <th>Time (days)</th>
-          <th>Automatic result</th>
-          <th>Use in curve</th>
-        </tr>
-      </thead>
-      <tbody id="review"></tbody>
-    </table>
-  </div>
-</section>
+    <div id="curveStatus" class="status" role="status"></div>
+    <div id="plot" class="scroll"></div>
+    <div id="legend"></div>
+
+    <h2>Animal results</h2>
+    <p>
+      All loaded animals are included automatically.
+      A recording gap resets the inactivity confirmation period;
+      missing observations are not treated as zero activity.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Monitor</th>
+            <th>Position</th>
+            <th>Group</th>
+            <th>Time (days)</th>
+            <th>Automatic result</th>
+          </tr>
+        </thead>
+        <tbody id="review"></tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <footer>
-  Works without installing R.
-  For folders, use a current Chrome or Edge browser on Mac or Windows;
-  individual file selection is also available.
+  Works without installing R. For folders, use a current Chrome or Edge
+  browser on Mac or Windows; individual file selection is also available.
 </footer>
 
 <script>
@@ -189,7 +249,7 @@ let output = [];
 let traces = [];
 let lifespans = [];
 
-/* CSV parser: supports quoted fields and Windows line endings. */
+/* Read CSV, including quoted fields and Windows line endings. */
 function csvParse(s) {
   s = s.replace(/^\uFEFF/, "");
 
@@ -215,6 +275,7 @@ function csvParse(s) {
       if (c === "\r" && s[i + 1] === "\n") i++;
 
       row.push(value);
+
       if (row.some(x => x !== "")) rows.push(row);
 
       row = [];
@@ -236,7 +297,7 @@ function csvParse(s) {
   return rows;
 }
 
-/* Use the recorded clock values consistently on Mac and Windows. */
+/* Compare recorded clock values consistently on Mac and Windows. */
 function stamp(date, time = "00:00:00") {
   let year, month, day;
 
@@ -271,7 +332,10 @@ function stamp(date, time = "00:00:00") {
   }
 
   year = Number(year);
-  if (year < 100) year += year < 70 ? 2000 : 1900;
+
+  if (year < 100) {
+    year += year < 70 ? 2000 : 1900;
+  }
 
   const clock = time.match(
     /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/
@@ -331,7 +395,7 @@ function invalidate() {
   $("plot").replaceChildren();
 }
 
-/* Read metadata and offer one factor. */
+/* Inspect files and populate the factor selector. */
 async function choose(files) {
   selected = [...files];
   metadata = [];
@@ -341,6 +405,7 @@ async function choose(files) {
 
   $("load").disabled = true;
   $("factor").disabled = true;
+
   say("");
 
   try {
@@ -413,6 +478,7 @@ $("files").onchange = event => choose(event.target.files);
 
 $("factor").onchange = () => {
   invalidate();
+
   $("load").disabled = !$("factor").value;
 
   const values = [
@@ -426,7 +492,7 @@ $("factor").onchange = () => {
 
 $("offset").onchange = invalidate;
 
-/* Read monitor files in chunks. */
+/* Read monitor recordings in chunks. */
 async function* lines(file) {
   const reader = file.stream().getReader();
   const decoder = new TextDecoder();
@@ -436,6 +502,7 @@ async function* lines(file) {
   try {
     while (true) {
       const { value, done } = await reader.read();
+
       if (done) break;
 
       pending += decoder.decode(value, { stream: true });
@@ -458,7 +525,7 @@ async function* lines(file) {
   }
 }
 
-/* Load the selected positions inside their metadata date windows. */
+/* Load each animal's activity inside its metadata date window. */
 async function run() {
   invalidate();
 
@@ -566,6 +633,7 @@ async function run() {
       };
 
       if (!groups.has(row.file)) groups.set(row.file, []);
+
       groups.get(row.file).push(animal);
     }
 
@@ -602,6 +670,7 @@ async function run() {
           );
         }
 
+        // Skip status/event rows.
         if (parts[3] !== "1") continue;
 
         if (parts[7] !== "Ct") {
@@ -714,7 +783,7 @@ async function run() {
 
 $("load").onclick = run;
 
-/* Loading summary. */
+/* Loading summary table. */
 function render() {
   $("results").hidden = false;
   $("stats").replaceChildren();
@@ -735,6 +804,7 @@ function render() {
     const strong = document.createElement("strong");
 
     strong.textContent = value;
+
     div.append(strong, document.createTextNode(label));
     $("stats").append(div);
   }
@@ -764,98 +834,90 @@ function render() {
   }
 }
 
-/* Infer death from a confirmed zero-activity period. */
+/* Infer death without excluding animals because of recording gaps. */
 function infer(trace, hours) {
-  const times = trace.times;
-  const counts = trace.counts;
-  const windowMs = hours * 3600000;
-
-  if (!times.length) {
-    return {
-      time: 0, end: 0, event: false,
-      reason: "No records", excluded: true
-    };
+  if (!trace.times.length) {
+    throw Error(
+      trace.file + ", position " + trace.position +
+      ": no records in the selected date window. Check the metadata dates."
+    );
   }
 
-  const end =
-    (times[times.length - 1] - trace.start) / 86400000;
+  const ordered = trace.times
+    .map((time, i) => ({
+      time,
+      count: trace.counts[i]
+    }))
+    .sort((a, b) => a.time - b.time);
 
-  if (times.some((value, i) => i && value <= times[i - 1])) {
-    return {
-      time: end, end, event: false,
-      reason: "Duplicate or unordered timestamps",
-      excluded: true
-    };
+  // Consolidate duplicate timestamps without doubling activity.
+  const records = [];
+
+  for (const record of ordered) {
+    const previous = records[records.length - 1];
+
+    if (previous && previous.time === record.time) {
+      previous.count = Math.max(previous.count, record.count);
+    } else {
+      records.push({ ...record });
+    }
   }
 
-  const differences = times.slice(1)
-    .map((value, i) => value - times[i])
+  const intervals = records.slice(1)
+    .map((record, i) => record.time - records[i].time)
     .sort((a, b) => a - b);
 
-  const interval = differences.length
-    ? differences[Math.floor(differences.length / 2)]
+  const interval = intervals.length
+    ? intervals[Math.floor(intervals.length / 2)]
     : 0;
 
-  if (!interval) {
-    return {
-      time: end, end, event: false,
-      reason: "Too few records", excluded: true
-    };
-  }
-
-  if (times[0] - trace.start > interval * 1.5) {
-    return {
-      time: end, end, event: false,
-      reason: "Recording begins late", excluded: true
-    };
-  }
-
-  if (!counts.some(value => value > 0)) {
-    return {
-      time: end, end, event: false,
-      reason: "No activity recorded", excluded: true
-    };
-  }
-
-  if (
-    times.some(
-      (value, i) => i && value - times[i - 1] > interval * 1.5
-    )
-  ) {
-    return {
-      time: end, end, event: false,
-      reason: "Recording gap", excluded: true
-    };
-  }
+  const end =
+    (records[records.length - 1].time - trace.start) / 86400000;
 
   let zeroStart = null;
+  let gaps = 0;
 
-  for (let i = 0; i < times.length; i++) {
-    if (counts[i] > 0) {
+  for (let i = 0; i < records.length; i++) {
+    // Missing observations cannot confirm continuous inactivity.
+    if (
+      i > 0 &&
+      interval > 0 &&
+      records[i].time - records[i - 1].time > interval * 1.5
+    ) {
+      zeroStart = null;
+      gaps++;
+    }
+
+    if (records[i].count > 0) {
       zeroStart = null;
       continue;
     }
 
-    if (zeroStart === null) zeroStart = times[i];
+    if (zeroStart === null) {
+      zeroStart = records[i].time;
+    }
 
-    if (times[i] - zeroStart >= windowMs) {
+    if (records[i].time - zeroStart >= hours * 3600000) {
       return {
         time: (zeroStart - trace.start) / 86400000,
         end,
         event: true,
-        reason: "Confirmed inactivity",
-        excluded: false
+        reason: "Confirmed inactivity" +
+          (gaps ? " (recording gaps present)" : "")
       };
     }
   }
 
   return {
-    time: end, end, event: false,
-    reason: "No confirmed death", excluded: false
+    time: end,
+    end,
+    event: false,
+    reason: "Censored: no confirmed death" +
+      (gaps ? " (recording gaps present)" : "")
   };
 }
 
-/* Kaplan–Meier estimator, including tied deaths and censoring. */
+/* Kaplan–Meier estimator, handling tied deaths and censoring. */
 function km(data) {
   const ordered = [...data].sort((a, b) => a.time - b.time);
 
@@ -873,6 +935,7 @@ function km(data) {
     while (i < ordered.length && ordered[i].time === time) {
       if (ordered[i].event) dead++;
       else censored++;
+
       i++;
     }
 
@@ -881,7 +944,9 @@ function km(data) {
       points.push({ time, survival });
     }
 
-    if (censored) censors.push({ time, survival });
+    if (censored) {
+      censors.push({ time, survival });
+    }
 
     risk -= dead + censored;
   }
@@ -911,7 +976,7 @@ $("back").onclick = () => {
 
 $("generate").onclick = generate;
 
-/* Generate automatic classifications and the review table. */
+/* Generate classifications and the animal results table. */
 function generate() {
   const hours = Number($("windowHours").value);
 
@@ -921,18 +986,27 @@ function generate() {
     return;
   }
 
-  lifespans = traces.map(trace => ({
-    ...trace,
-    ...infer(trace, hours)
-  }));
+  try {
+    lifespans = traces.map(trace => ({
+      file: trace.file,
+      position: trace.position,
+      group: trace.group,
+      ...infer(trace, hours)
+    }));
+  } catch (error) {
+    lifespans = [];
+
+    $("plot").replaceChildren();
+    $("legend").replaceChildren();
+    $("review").replaceChildren();
+    $("curveStatus").textContent = error.message;
+
+    return;
+  }
 
   $("review").replaceChildren();
 
-  lifespans.forEach(animal => {
-    animal.use = animal.excluded
-      ? "exclude"
-      : animal.event ? "death" : "censor";
-
+  for (const animal of lifespans) {
     const row = document.createElement("tr");
 
     for (const value of [
@@ -947,71 +1021,33 @@ function generate() {
       row.append(cell);
     }
 
-    const cell = document.createElement("td");
-    const select = document.createElement("select");
-
-    select.setAttribute(
-      "aria-label",
-      animal.file + " position " + animal.position
-    );
-
-    select.append(new Option("Exclude", "exclude"));
-
-    if (animal.event && !animal.excluded) {
-      select.append(new Option("Inferred death", "death"));
-    }
-
-    if (!animal.excluded) {
-      select.append(
-        new Option("Censor at recording end", "censor")
-      );
-    }
-
-    select.value = animal.use;
-
-    select.onchange = () => {
-      animal.use = select.value;
-
-      row.children[3].textContent = (
-        animal.use === "censor" ? animal.end : animal.time
-      ).toFixed(3);
-
-      drawCurves();
-    };
-
-    cell.append(select);
-    row.append(cell);
     $("review").append(row);
-  });
+  }
 
   drawCurves();
 }
 
 /* Draw survival curves and censoring marks using SVG. */
 function drawCurves() {
-  const included = lifespans
-    .filter(animal => animal.use !== "exclude")
-    .map(animal => ({
-      group: animal.group,
-      time: animal.use === "censor" ? animal.end : animal.time,
-      event: animal.use === "death"
-    }));
+  const included = lifespans.map(animal => ({
+    group: animal.group,
+    time: animal.time,
+    event: animal.event
+  }));
 
   const deaths = included.filter(animal => animal.event).length;
 
   $("curveStatus").textContent =
-    included.length + " included · " +
+    included.length + " animals · " +
     deaths + " inferred deaths · " +
-    (included.length - deaths) + " censored · " +
-    (lifespans.length - included.length) + " excluded. " +
-    "Censoring marks are shown as +. " +
-    "Changing the window and regenerating resets review choices.";
+    (included.length - deaths) + " censored. " +
+    "All loaded animals are included. Censoring marks are shown as +.";
 
   $("plot").replaceChildren();
   $("legend").replaceChildren();
 
   if (!included.length) {
-    $("curveStatus").textContent += " No eligible animals to plot.";
+    $("curveStatus").textContent += " No data to plot.";
     return;
   }
 
@@ -1021,6 +1057,7 @@ function drawCurves() {
   svg.setAttribute("viewBox", "0 0 900 450");
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", "Kaplan–Meier survival curves");
+
   svg.style.minWidth = "600px";
   svg.style.width = "100%";
 
@@ -1134,6 +1171,7 @@ function drawCurves() {
     const legend = document.createElement("div");
     legend.style.color = colour;
     legend.textContent = group + " · n=" + data.length;
+
     $("legend").append(legend);
   });
 
