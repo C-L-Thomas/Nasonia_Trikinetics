@@ -1,0 +1,1796 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trikinetics • Incubator dashboard</title>
+
+<style>
+:root {
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #243b42;
+  background: #f3f6f5;
+  --muted: #657d82;
+  --line: #dce6e3;
+  --green: #087e70;
+  --gold: #9b6b19;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+header {
+  padding: 32px max(28px, calc((100vw - 1320px)/2));
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 750;
+  color: #087e70;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 34px;
+  font-weight: 650;
+  letter-spacing: -1.2px;
+  line-height: 1.2;
+  margin: 12px 0;
+}
+
+h2 {
+  font-size: 21px;
+  letter-spacing: -.5px;
+  margin: 28px 0 16px;
+}
+
+h3 {
+  font-size: 17px;
+  letter-spacing: -.3px;
+  margin: 0 0 8px;
+}
+
+p { color: var(--muted); line-height: 1.65; }
+header p { margin: 10px 0; max-width: 900px; }
+
+main {
+  max-width: 1376px;
+  padding: 24px 28px 48px;
+  margin: auto;
+}
+
+.bar, .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bar { margin: 20px 0 0; }
+.push { margin-left: auto; }
+
+button, .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  padding: 10px 15px;
+  border: 1px solid #087e70;
+  border-radius: 7px;
+  background: #087e70;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.secondary {
+  background: #fff;
+  color: #3e6269;
+  border-color: #cfddda;
+}
+
+button:hover, .button:hover { filter: brightness(.96); }
+button:disabled { opacity: .45; cursor: default; }
+
+input, select {
+  font: inherit;
+  padding: 8px;
+  border: 1px solid #c8d8d3;
+  border-radius: 6px;
+  background: #fff;
+  color: #243b42;
+}
+
+input[type=number] { width: 78px; }
+input[type=file] { display: none; }
+
+label { font-size: 12px; color: var(--muted); }
+label input, label select { margin: 4px; }
+
+details {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+
+summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  color: #365b62;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 20px;
+  box-shadow: 0 2px 5px #173a3004;
+}
+
+.small { font-size: 11px; line-height: 1.6; color: var(--muted); }
+
+.pill {
+  display: inline-block;
+  white-space: nowrap;
+  background: #eef3f1;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 650;
+  color: #607675;
+}
+
+.online { background: #e5f4ed; color: #197153; }
+.offline { background: #f1f2f2; color: #748183; }
+.dead { color: #a35050; }
+.warn { color: #9b6b19; }
+
+.counts {
+  display: flex;
+  gap: 36px;
+  margin: 18px 0;
+  border-top: 1px solid #edf1ef;
+  padding-top: 14px;
+}
+
+.counts strong {
+  display: block;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 650;
+  color: #193e42;
+  letter-spacing: -1px;
+}
+
+.counts span {
+  font-size: 9px;
+  font-weight: 700;
+  color: #7b8e90;
+  letter-spacing: 1px;
+}
+
+.channels {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.channel {
+  display: block;
+  border: 0;
+  border-radius: 4px;
+  padding: 6px 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  background: #e4f2eb;
+  color: #327859;
+}
+
+.channel.dead { background: #f8e8e6; color: #a15a55; }
+.channel.unknown { background: #eff2f1; color: #96a5a3; }
+
+.channel.empty {
+  background: #fff;
+  border: 1px solid #e1e8e5;
+  color: #b1bdb9;
+  padding: 5px 0;
+}
+
+.notice {
+  padding: 11px 16px;
+  background: #eaf2ef;
+  border: 1px solid #dce8e2;
+  border-radius: 7px;
+  color: #547268;
+  font-size: 12px;
+}
+
+.scroll { overflow: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+td, th { padding: 10px; text-align: left; border-bottom: 1px solid var(--line); }
+a { color: #087e70; }
+#message { font-size: 12px; white-space: pre-wrap; margin: 12px 0; }
+
+.incubator-list { display: grid; gap: 16px; }
+
+.env-card {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px;
+}
+
+.incubator-heading {
+  border-right: 1px solid var(--line);
+  padding-right: 18px;
+}
+
+.incubator-heading .pill { margin: 4px 0 12px; }
+
+.measurement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.metric-title { font-size: 11px; font-weight: 650; color: #688287; }
+
+.metric-value {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  line-height: 1.4;
+  color: #1e494c;
+}
+
+.metric-unit {
+  font-size: 13px;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: #839796;
+}
+
+.metric-meta { font-size: 10px; color: #778f91; }
+.metric svg { display: block; width: 100%; height: auto; margin-top: 12px; }
+.chart-caption { font-size: 9px; color: #8b9d9c; margin-top: 2px; }
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0 26px;
+}
+
+.overview-item {
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.overview-item strong {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  color: #214e50;
+  display: block;
+}
+
+.overview-item span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: #79908d;
+}
+
+#dialog {
+  background: #fff !important;
+  color: #243b42 !important;
+  border-color: #d4e0db !important;
+  padding: 24px;
+}
+
+button:focus-visible, summary:focus-visible,
+input:focus-visible, select:focus-visible {
+  outline: 2px solid #087e70;
+  outline-offset: 3px;
+}
+
+@media(min-width:1500px) {
+  .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+@media(max-width:1050px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .env-card { grid-template-columns: 1fr; gap: 16px; }
+
+  .incubator-heading {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .incubator-heading h3 { margin: 0; }
+  .incubator-heading .pill { margin: 0; }
+}
+
+@media(max-width:750px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .measurement-grid { gap: 15px; }
+  .metric-value { font-size: 24px; }
+  .push { margin-left: 0; }
+  main { padding: 18px; }
+  header { padding: 26px 20px; }
+  h1 { font-size: 28px; }
+}
+
+@media(max-width:500px) {
+  .grid { grid-template-columns: 1fr; }
+  .measurement-grid { grid-template-columns: 1fr; gap: 20px; }
+  .metric { border-bottom: 1px solid #eef2f0; padding-bottom: 12px; }
+  .metric svg { max-height: 150px; }
+  .incubator-heading { flex-wrap: wrap; gap: 8px; }
+  .env-card { padding: 18px; }
+  .bar { gap: 8px; }
+}
+
+@media print {
+  body { background: #fff; }
+  header { padding: 15px; }
+  main { padding: 15px; }
+  .card { break-inside: avoid; }
+  .notice { background: #fff; }
+  .overview { margin: 12px 0; }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Compact environment panels. */
+.incubator-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.env-card { display: block; padding: 18px; }
+
+.incubator-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 0 0 12px;
+  margin-bottom: 6px;
+}
+
+.incubator-heading .small { font-size: 9px; text-align: right; }
+.incubator-heading h3 { font-size: 16px; white-space: nowrap; }
+.incubator-heading .pill { margin: 4px 0 0; }
+.measurement-grid { display: block; }
+
+.metric {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 10px;
+  border-bottom: 1px solid #edf1ef;
+  padding: 12px 0;
+}
+
+.metric-title { font-size: 10px; align-self: center; }
+.metric-value { font-size: 23px; line-height: 1.2; white-space: nowrap; }
+.metric-unit { font-size: 10px; }
+.metric-meta { grid-column: 1/-1; font-size: 10px; }
+
+.trends {
+  padding: 10px 0 0;
+  margin: 10px 0 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.trends summary { font-size: 11px; color: #087e70; }
+.trends svg { width: 100%; height: auto; margin: 5px 0; }
+.trend-title { font-size: 11px; font-weight: 650; margin-top: 14px; }
+.trends .chart-caption { font-size: 9px; }
+
+@media(max-width:1100px) {
+  .incubator-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media(max-width:550px) {
+  .incubator-list { grid-template-columns: 1fr; }
+  .metric { padding: 10px 0; }
+  .incubator-heading { flex-wrap: nowrap; }
+  .metric svg { max-height: none; }
+}
+
+@media print {
+  .incubator-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Student tools palette: black, charcoal and gold. */
+:root {
+  color: #24211f;
+  background: #111;
+  --muted: #72654a;
+  --line: #d9ad28;
+  --green: #ffc526;
+  --gold: #bd8c00;
+}
+
+body { background: #111; }
+header { background: #24211f; border-bottom: 1px solid #443b24; }
+header h1 { color: #fff; }
+header p { color: #d5c8a2; }
+.eyebrow { color: #ffc526; }
+main { color: #24211f; }
+.button, button { background: #ffc526; border-color: #ffc526; color: #24211f; }
+.secondary { background: #302b23; color: #ffcf3d; border-color: #65532d; }
+.pill { background: #fff0be; color: #706044; }
+.online { background: #edf4d3; color: #50641f; }
+.offline { background: #e9e2cd; color: #82775f; }
+.notice { background: #29271f; border: 1px solid #4b412a; color: #d5c8a2; }
+h2 { color: #ffcf3d; }
+h3 { color: #24211f; }
+
+.card {
+  background: #f4ce55;
+  border: 1px solid #d9ad28;
+  box-shadow: 0 4px 16px #0002;
+}
+
+.card .small { color: #65542f; }
+.counts { border-color: #c6a33f; }
+.counts strong { color: #24211f; }
+.counts span { color: #66552d; }
+
+.channel {
+  background: #fff2bd;
+  color: #464822;
+  border: 1px solid #c3ac53;
+  padding: 5px 0;
+}
+
+.channel.dead { background: #e9a78e; border-color: #c1816e; color: #702b28; }
+.channel.unknown { background: #e4c978; border-color: #c5aa59; color: #87713a; }
+.channel.empty { background: transparent; border-color: #c7aa4e; color: #9c8438; }
+.overview-item { background: #24211f; border-color: #443b24; }
+.overview-item strong { color: #ffc526; }
+.overview-item span { color: #c8b78b; }
+details { background: #f4ce55; border-color: #d9ad28; }
+details p { color: #65542f; }
+summary { color: #473e25; }
+.metric { border-color: #c7a645; }
+.metric-title { color: #65532b; }
+.metric-value { color: #24211f; }
+.metric-unit { color: #786337; }
+.metric-meta { color: #6f5c30; }
+.incubator-heading { border-color: #c7a645; }
+.trends { background: transparent; border: 0; }
+.trends summary { color: #4f4324; }
+.trend-title { color: #4f4324; }
+.chart-caption { color: #786337; }
+.small { color: #c8b78b; }
+#message { color: #c8b78b; }
+input, select { background: #fffdf8; color: #24211f; border-color: #bda55c; }
+label { color: #65542f; }
+.button label, header label { color: inherit; }
+a { color: #9b6c00; }
+
+#dialog {
+  background: #fff8df !important;
+  color: #24211f !important;
+  border-color: #d9ad28 !important;
+}
+
+#dialog p, #dialog .small { color: #65542f; }
+#dialog h2, #setup h3 { color: #24211f; }
+.warn { color: #8c3f1e; }
+
+button:focus-visible, summary:focus-visible,
+input:focus-visible, select:focus-visible {
+  outline-color: #e1a800;
+}
+
+td, th { border-color: #d4b456; }
+
+.incubator-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.env-card { min-width: 0; padding: 16px; }
+.metric { padding: 9px 0; }
+.metric-value { font-size: 22px; }
+.metric-title { font-size: 10px; }
+.metric-meta, .incubator-heading .small { font-size: 9px; }
+.incubator-heading h3 { font-size: 15px; }
+.version { font-size: 10px; color: #a99565; margin-top: 14px; }
+.trends svg { background: #fff9e6; border-radius: 6px; padding: 4px; }
+.trends .chart-caption { color: #786337; }
+
+@media(max-width:1100px) {
+  .incubator-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media(max-width:550px) {
+  .incubator-list { grid-template-columns: 1fr; }
+}
+
+@media print {
+  body, header { background: #fff; }
+  header h1, h2 { color: #24211f; }
+  .overview-item { background: #fff; }
+  .overview-item strong { color: #24211f; }
+  .notice { background: #fff; color: #65542f; }
+  .version { color: #65542f; }
+}
+</style>
+
+<header>
+  <div class="eyebrow">Social Epigenetics Lab · Student tools</div>
+  <h1>Trikinetics dashboard</h1>
+  <div class="version">USB app · Version 4 · 19 October 2026</div>
+
+  <p>
+    Seven-day environment trends, monitor connections and wasp survival
+    — from your latest Trikinetics files.
+  </p>
+
+  <div class="bar">
+    <label class="button">
+      Choose USB folder
+      <input id="folder" type="file" webkitdirectory multiple>
+    </label>
+
+    <label class="button secondary">
+      Choose monitor files
+      <input id="files" type="file" multiple accept=".txt">
+    </label>
+
+    <button id="refresh" class="secondary" disabled>Recalculate</button>
+    <button id="exportPage" class="secondary" disabled>
+      Download status page
+    </button>
+
+    <span class="push pill" id="snapshot">No data loaded</span>
+  </div>
+</header>
+
+<main>
+  <div class="notice">
+    Snapshot view: all statuses refer to the recordings on your USB.
+    Copy updated files onto the USB, then select the folder again.
+  </div>
+
+  <p id="message" role="status" aria-live="polite">
+    Choose your monitor files to begin. Everything is processed on this
+    computer; no internet connection is required.
+  </p>
+
+  <details>
+    <summary>Settings & portable setup</summary>
+
+    <p>
+      Save settings onto your USB after editing. Include that JSON file
+      when choosing your folder on another computer. Browser storage
+      alone does not travel with the USB.
+    </p>
+
+    <div class="row">
+      <label>
+        Death confirmation
+        <input id="death" type="number" min="1" max="168" value="24">
+        hours
+      </label>
+    </div>
+
+    <p class="small">
+      Only the latest seven days of each file are assessed. Channels
+      with movement in that window are alive unless followed by a
+      continuous zero-activity period of 24 hours (or your chosen
+      threshold). Recording gaps reset that period. Channels with no
+      movement in the week are shown separately and excluded from
+      alive/dead counts.
+    </p>
+
+    <div class="bar">
+      <button id="save" class="secondary">Save settings to USB…</button>
+
+      <label class="button secondary">
+        Import settings
+        <input id="config" type="file" accept=".json">
+      </label>
+
+      <button id="csv" class="secondary">Export channel summary</button>
+    </div>
+
+    <div id="setup"></div>
+  </details>
+
+  <div id="overview" class="overview"></div>
+
+  <h2>Incubator environment</h2>
+  <div id="incubators" class="incubator-list"></div>
+
+  <div class="bar"><h2>Activity monitors</h2></div>
+
+  <p class="small">
+    Green: alive · pink: dead · grey: no movement in the last week /
+    no valid data · outlined: empty. Click a channel for details.
+  </p>
+
+  <div id="monitors" class="grid"></div>
+
+  <details>
+    <summary>How to use this USB app</summary>
+
+    <p>
+      Keep this HTML file on the USB. Open it in your browser on Mac or
+      Windows, choose the data folder and allow the files to load.
+      Select the folder again after each weekly update. Click a channel
+      to exclude it if empty. The latest seven days are assessed
+      automatically.
+    </p>
+
+    <p>
+      Connection labels use status 1 (recording) and 51 (offline),
+      matching your examples. Other status codes are displayed
+      explicitly. All-zero rows with offline codes are excluded from
+      survival calculations.
+    </p>
+
+    <p>
+      Environment measurements use the TriKinetics DEnM data sheet:
+      channel 7 temperature × 0.1 °C, channel 12 relative humidity %,
+      and channel 2 light lux. You can adjust the mapping in Settings.
+      Columns count from 1 in the original tab-separated file. The
+      four-value sensor groups are not automatically interpreted as
+      four separate sensors.
+    </p>
+  </details>
+</main>
+
+<dialog id="dialog"
+  style="border:1px solid #d9ad28;border-radius:12px;max-width:650px">
+  <div id="detail"></div>
+  <button id="close">Close</button>
+</dialog>
+
+<script>
+'use strict';
+
+const $ = id => document.getElementById(id);
+const H = 3600000;
+
+const defaults = () => Object.fromEntries(
+  [1, 2, 3, 4].map(n => [
+    n,
+    [
+      { label: 'Temperature', col: 17, scale: 0.1, unit: '°C' },
+      { label: 'Humidity', col: 22, scale: 1, unit: '% RH' },
+      { label: 'Light', col: 12, scale: 1, unit: 'lux' }
+    ]
+  ])
+);
+
+let cfg = {
+  version: 1,
+  death: 24,
+  inactive: 60,
+  stale: 5,
+  monitors: {},
+  sensors: defaults()
+};
+
+let selected = [];
+let results = [];
+let busy = false;
+
+const esc = s => String(s).replace(
+  /[&<>"']/g,
+  c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c])
+);
+
+function stamp(d, t) {
+  const m = d.match(/^(\d{1,2}) ([A-Za-z]{3}) (\d{2,4})$/);
+  if (!m) return NaN;
+
+  let y = +m[3];
+  if (y < 100) y += 2000;
+
+  const mo = [
+    'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+    'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+  ].indexOf(m[2].toLowerCase());
+
+  return mo < 0
+    ? NaN
+    : Date.parse(
+        `${y}-${String(mo + 1).padStart(2, '0')}-` +
+        `${m[1].padStart(2, '0')}T${t}Z`
+      );
+}
+
+const fmt = t => Number.isFinite(t)
+  ? new Date(t).toISOString().slice(0, 19).replace('T', ' ')
+  : '—';
+
+const settings = n => cfg.monitors[n] || (
+  cfg.monitors[n] = {
+    incubator: 0,
+    start: '',
+    empty: [],
+    occupied: []
+  }
+);
+
+function sync() {
+  $('death').value = cfg.death;
+}
+
+try {
+  const c = JSON.parse(localStorage.getItem('trikineticsUSBv1'));
+  if (c && c.version === 1) cfg = c;
+} catch {}
+
+sync();
+
+function persist() {
+  try {
+    localStorage.setItem('trikineticsUSBv1', JSON.stringify(cfg));
+  } catch {}
+}
+
+async function* lines(file) {
+  const reader = file.stream().getReader();
+  const decoder = new TextDecoder();
+  let pending = '';
+
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      pending += decoder.decode(value, { stream: true });
+
+      const a = pending.split('\n');
+      pending = a.pop();
+
+      for (const s of a) yield s.replace(/\r$/, '');
+    }
+
+    pending += decoder.decode();
+    if (pending) yield pending.replace(/\r$/, '');
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+function connection(r) {
+  return r.status === '1'
+    ? 'Connected'
+    : r.status === '51'
+      ? 'Offline'
+      : 'Status ' + r.status;
+}
+
+async function cadence(file, start) {
+  let prev = null;
+  let total = 0;
+  const hist = new Map();
+
+  for await (const line of lines(file)) {
+    const p = line.split('\t');
+
+    if (
+      p.length < 42 ||
+      p[3] !== '1' ||
+      p[7] !== 'Ct'
+    ) continue;
+
+    const t = stamp(p[1], p[2]);
+    if (!Number.isFinite(t) || t < start) continue;
+
+    if (prev !== null && t > prev) {
+      const d = t - prev;
+      hist.set(d, (hist.get(d) || 0) + 1);
+      total++;
+    }
+
+    prev = t;
+  }
+
+  let count = 0;
+
+  for (const [d, n] of [...hist].sort((a, b) => a[0] - b[0])) {
+    count += n;
+    if (count > Math.floor(total / 2)) return d;
+  }
+
+  return 60000;
+}
+
+async function parse(file, n) {
+  const env = n >= 1 && n <= 4;
+  settings(n);
+
+  let endpoint = null;
+
+  for await (const line of lines(file)) {
+    const a = line.split('\t');
+    const t = stamp(a[1] || '', a[2] || '');
+
+    if (Number.isFinite(t)) {
+      endpoint = endpoint === null ? t : Math.max(endpoint, t);
+    }
+  }
+
+  const start = (endpoint ?? 0) - 7 * 24 * H;
+
+  const out = {
+    n,
+    name: file.name,
+    env,
+    end: null,
+    status: '?',
+    lastValid: null,
+    raw: null,
+    series: [],
+    channels: Array.from({ length: 32 }, () => ({
+      lastMove: null,
+      zero: null,
+      death: null,
+      after: false,
+      seen: false,
+      total: 0
+    })),
+    warnings: 0,
+    rows: 0,
+    gaps: 0,
+    windowStart: start,
+    envStats: Array.from({ length: 32 }, () => ({
+      sum: 0,
+      count: 0,
+      min: Infinity,
+      max: -Infinity
+    }))
+  };
+
+  let previous = null;
+  const interval = env ? 60000 : await cadence(file, start);
+  let prevRow = null;
+
+  for await (const line of lines(file)) {
+    if (!line.trim()) continue;
+
+    const p = line.split('\t');
+
+    if (p.length < 42) {
+      out.warnings++;
+      continue;
+    }
+
+    const t = stamp(p[1], p[2]);
+
+    if (!Number.isFinite(t)) {
+      out.warnings++;
+      continue;
+    }
+
+    if (out.end !== null && t < out.end) {
+      throw Error(
+        file.name +
+        ': timestamps run backwards; select one chronological recording per monitor.'
+      );
+    }
+
+    out.end = t;
+    out.status = p[3];
+    out.rows++;
+
+    if (out.rows % 5000 === 0) {
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    if (
+      p[3] !== '1' ||
+      p[7] !== 'Ct' ||
+      t < start
+    ) continue;
+
+    const vals = p.slice(10, 42).map(
+      v => v.trim() === '' ? NaN : Number(v)
+    );
+
+    if (vals.some(v => !Number.isFinite(v) || v < 0)) {
+      out.warnings++;
+      continue;
+    }
+
+    if (t === previous) {
+      if (prevRow && vals.some((v, i) => v !== prevRow[i])) {
+        throw Error(
+          file.name + ': conflicting duplicate timestamp ' + fmt(t)
+        );
+      }
+      continue;
+    }
+
+    if (previous !== null) {
+      const delta = t - previous;
+
+      if (delta > interval * 1.5) {
+        out.gaps++;
+        out.channels.forEach(c => c.zero = null);
+      }
+    }
+
+    out.lastValid = t;
+    out.raw = p;
+    previous = t;
+    prevRow = vals;
+
+    if (env) {
+      const hour = Math.floor(t / H) * H;
+      let bin = out.series[out.series.length - 1];
+
+      if (!bin || bin.t !== hour) {
+        bin = {
+          t: hour,
+          sum: Array(32).fill(0),
+          min: Array(32).fill(Infinity),
+          max: Array(32).fill(-Infinity),
+          count: 0
+        };
+        out.series.push(bin);
+      }
+
+      bin.count++;
+
+      vals.forEach((v, i) => {
+        bin.sum[i] += v;
+        bin.min[i] = Math.min(bin.min[i], v);
+        bin.max[i] = Math.max(bin.max[i], v);
+
+        const st = out.envStats[i];
+        st.sum += v;
+        st.count++;
+        st.min = Math.min(st.min, v);
+        st.max = Math.max(st.max, v);
+      });
+
+      continue;
+    }
+
+    vals.forEach((v, i) => {
+      const c = out.channels[i];
+      c.seen = true;
+      c.total += v;
+
+      if (v > 0) {
+        c.lastMove = t;
+        c.zero = null;
+        c.death = null;
+        c.after = false;
+      } else {
+        if (c.zero === null) c.zero = t;
+
+        if (
+          c.death === null &&
+          t - c.zero >= cfg.death * H
+        ) {
+          c.death = c.zero;
+        }
+      }
+    });
+  }
+
+  out.interval = interval;
+  return out;
+}
+
+function state(r, c, i) {
+  const s = settings(r.n);
+
+  if (s.empty.includes(i + 1)) return 'empty';
+  if (!c.seen) return 'unknown';
+  if (c.lastMove === null) return 'unknown';
+  if (c.death !== null) return 'dead';
+
+  return 'alive';
+}
+
+async function load() {
+  if (busy) return;
+
+  busy = true;
+  $('refresh').disabled = true;
+
+  try {
+    cfg.death = +$('death').value;
+
+    if (!(cfg.death >= 1 && cfg.death <= 168)) {
+      throw Error('Choose death confirmation between 1 and 168 hours.');
+    }
+
+    const next = [];
+    const seen = new Set();
+
+    const monitorFiles = selected.filter(
+      f => /^Monitor\d+\.txt$/i.test(f.name)
+    );
+
+    let completed = 0;
+
+    for (const f of monitorFiles) {
+      const m = f.name.match(/^Monitor(\d+)\.txt$/i);
+      if (!m) continue;
+
+      const n = +m[1];
+
+      if (seen.has(n)) {
+        throw Error(
+          'Duplicate Monitor' + n +
+          '.txt. Select a single recording folder.'
+        );
+      }
+
+      seen.add(n);
+
+      $('message').textContent =
+        'Reading ' + f.name + ' · ' +
+        (++completed) + ' of ' + monitorFiles.length + '…';
+
+      next.push(await parse(f, n));
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    results = next.sort((a, b) => a.n - b.n);
+
+    if (!results.length) {
+      throw Error('No Monitor<number>.txt files found.');
+    }
+
+    persist();
+    render();
+
+    $('message').textContent =
+      `Loaded ${results.length} monitors. ` +
+      `${results.reduce((s, r) => s + r.warnings, 0)} malformed rows skipped. ` +
+      'Recording timestamps are displayed as written in the files.';
+  } catch (e) {
+    results = [];
+    $('monitors').replaceChildren();
+    $('incubators').replaceChildren();
+    $('snapshot').textContent = 'Load failed';
+    $('message').textContent = e.message;
+  } finally {
+    busy = false;
+    $('refresh').disabled = !selected.length;
+    $('exportPage').disabled = !results.length;
+  }
+}
+
+function download(text, name, type = 'application/json') {
+  const u = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement('a');
+
+  a.href = u;
+  a.download = name;
+  a.click();
+
+  setTimeout(() => URL.revokeObjectURL(u), 2000);
+}
+
+function validConfig(c) {
+  if (!c || c.version !== 1 || !c.monitors || !c.sensors) {
+    throw Error('Unsupported settings file.');
+  }
+
+  if (!(c.death >= 1 && c.death <= 168)) {
+    throw Error('Invalid confirmation windows.');
+  }
+
+  for (const [n, a] of Object.entries(c.sensors)) {
+    if (
+      ![1, 2, 3, 4].includes(+n) ||
+      !Array.isArray(a) ||
+      a.some(s =>
+        !s ||
+        typeof s.label !== 'string' ||
+        typeof s.unit !== 'string' ||
+        !Number.isInteger(+s.col) ||
+        +s.col < 11 ||
+        +s.col > 42 ||
+        !Number.isFinite(+s.scale)
+      )
+    ) {
+      throw Error('Invalid environment settings.');
+    }
+  }
+
+  for (const [n, s] of Object.entries(c.monitors)) {
+    if (
+      !/^\d+$/.test(n) ||
+      !s ||
+      ![s.empty, s.occupied].every(a =>
+        Array.isArray(a) &&
+        a.every(v => Number.isInteger(v) && v >= 1 && v <= 32)
+      )
+    ) {
+      throw Error('Invalid monitor settings.');
+    }
+
+    if (s.start && !Number.isFinite(Date.parse(s.start + 'Z'))) {
+      throw Error('Invalid experiment start.');
+    }
+  }
+
+  return c;
+}
+
+async function choose(list) {
+  selected = [...list];
+
+  try {
+    const cs = selected.filter(
+      f => f.name === 'Trikinetics_settings.json'
+    );
+
+    if (cs.length > 1) {
+      throw Error('More than one settings file found.');
+    }
+
+    if (cs.length) {
+      cfg = validConfig(JSON.parse(await cs[0].text()));
+      sync();
+    }
+
+    await load();
+  } catch (e) {
+    $('message').textContent = e.message;
+  }
+}
+
+$('folder').onchange = e => choose(e.target.files);
+$('files').onchange = e => choose(e.target.files);
+$('refresh').onclick = load;
+$('close').onclick = () => $('dialog').close();
+
+$('save').onclick = () => {
+  persist();
+  download(JSON.stringify(cfg, null, 2), 'Trikinetics_settings.json');
+};
+
+$('config').onchange = async e => {
+  try {
+    cfg = validConfig(JSON.parse(await e.target.files[0].text()));
+    sync();
+    persist();
+
+    if (selected.length) await load();
+  } catch (e) {
+    $('message').textContent = e.message;
+  }
+};
+
+$('death').onchange = () => {
+  $('message').textContent = 'Settings changed. Click Recalculate to apply.';
+};
+
+function metric(r, sensor) {
+  const c = +sensor.col - 1;
+
+  return r.raw && c >= 10 && c < 42
+    ? Number(r.raw[c]) * Number(sensor.scale)
+    : null;
+}
+
+function envSummary(r, sensor) {
+  const st = r.envStats[+sensor.col - 11];
+  const scale = +sensor.scale;
+
+  if (!st || !st.count) return '<p>No valid readings this week.</p>';
+
+  const avg = st.sum / st.count * scale;
+  const min = Math.min(st.min * scale, st.max * scale);
+  const max = Math.max(st.min * scale, st.max * scale);
+
+  return `
+    <section class="metric">
+      <div class="metric-title">
+        ${esc(sensor.label)} · 7-day average
+      </div>
+
+      <div class="metric-value">
+        ${avg.toFixed(1)}
+        <span class="metric-unit">${esc(sensor.unit)}</span>
+      </div>
+
+      <div class="metric-meta">
+        Range ${min.toFixed(1)}–${max.toFixed(1)}
+        · fluctuation ${(max - min).toFixed(1)} ${esc(sensor.unit)}
+        <br>
+        Latest ${metric(r, sensor)?.toFixed(1)} ${esc(sensor.unit)}
+      </div>
+    </section>
+  `;
+}
+
+function spark(r, sensor) {
+  const i = +sensor.col - 11;
+  const scale = +sensor.scale;
+
+  const a = r.series.map(x => ({
+    t: x.t + H / 2,
+    v: x.sum[i] / x.count * scale,
+    lo: Math.min(x.min[i] * scale, x.max[i] * scale),
+    hi: Math.max(x.min[i] * scale, x.max[i] * scale)
+  }));
+
+  if (a.length < 2) return '';
+
+  const lo = Math.min(...a.map(x => x.lo));
+  const hi = Math.max(...a.map(x => x.hi));
+  const padding = (hi - lo) * .08 || 1;
+  const min = lo - padding;
+  const max = hi + padding;
+  const span = 7 * 24 * H;
+
+  const X = t =>
+    36 + Math.max(0, Math.min(1, (t - r.windowStart) / span)) * 314;
+
+  const Y = v => 105 - (v - min) / (max - min) * 94;
+
+  let d = '';
+  let bars = '';
+  let prev = null;
+
+  for (const x of a) {
+    d +=
+      `${prev === null || x.t - prev > 1.5 * H ? 'M' : 'L'}` +
+      `${X(x.t).toFixed(1)},${Y(x.v).toFixed(1)} `;
+
+    bars += `
+      <line
+        x1="${X(x.t).toFixed(1)}"
+        x2="${X(x.t).toFixed(1)}"
+        y1="${Y(x.lo).toFixed(1)}"
+        y2="${Y(x.hi).toFixed(1)}"
+        stroke="#209485"
+        opacity=".2"
+      />
+    `;
+
+    prev = x.t;
+  }
+
+  const grid = [lo, (lo + hi) / 2, hi].map(v => `
+    <line
+      x1="36" x2="350"
+      y1="${Y(v)}" y2="${Y(v)}"
+      stroke="#e7eeea"
+    />
+
+    <text
+      x="29" y="${Y(v) + 3}"
+      text-anchor="end"
+      fill="#849894"
+      font-size="9"
+    >${v.toFixed(1)}</text>
+  `).join('');
+
+  return `
+    <svg
+      viewBox="0 0 360 132"
+      role="img"
+      aria-label="Seven-day ${esc(sensor.label)}: hourly means with minimum and maximum"
+    >
+      ${grid}
+      ${bars}
+
+      <path
+        d="${d}"
+        fill="none"
+        stroke="#087e70"
+        stroke-width="1.8"
+      />
+
+      <text x="36" y="126" fill="#849894" font-size="9">
+        ${fmt(r.windowStart).slice(5, 10)}
+      </text>
+
+      <text
+        x="193" y="126"
+        text-anchor="middle"
+        fill="#849894"
+        font-size="9"
+      >${fmt(r.windowStart + span / 2).slice(5, 10)}</text>
+
+      <text
+        x="350" y="126"
+        text-anchor="end"
+        fill="#849894"
+        font-size="9"
+      >${fmt(r.end).slice(5, 10)}</text>
+    </svg>
+
+    <div class="chart-caption">Hourly mean · pale bars show range</div>
+  `;
+}
+
+function overview() {
+  const a = results.filter(r => !r.env);
+  const counts = { alive: 0, dead: 0 };
+
+  a.forEach(r => r.channels.forEach((c, i) => {
+    const v = state(r, c, i);
+    if (v in counts) counts[v]++;
+  }));
+
+  return [
+    [a.length, 'Activity monitors'],
+    [a.filter(r => r.status === '1').length, 'Connected'],
+    [counts.alive, 'Wasps alive'],
+    [counts.dead, 'Wasps dead']
+  ].map(([n, label]) => `
+    <div class="overview-item">
+      <strong>${n}</strong>
+      <span>${label}</span>
+    </div>
+  `).join('');
+}
+
+function render() {
+  const end = Math.max(...results.map(r => r.end || 0));
+
+  $('snapshot').textContent = results.length
+    ? 'Latest recording · ' + fmt(end)
+    : 'No data loaded';
+
+  $('overview').innerHTML = overview();
+
+  $('incubators').innerHTML = [1, 2, 3, 4].map(n => {
+    const r = results.find(r => r.n === n);
+    const sensors = cfg.sensors[n] || [];
+
+    return `
+      <article class="card env-card">
+        <div class="incubator-heading">
+          <div>
+            <h3>Incubator ${n}</h3>
+
+            <span class="pill ${r && r.status === '1' ? 'online' : 'offline'}">
+              ${r ? esc(connection(r)) : 'No file'}
+            </span>
+          </div>
+
+          <div class="small">
+            Environment Monitor ${n}
+            <br>
+            ${r ? fmt(r.lastValid) : 'Not loaded'}
+
+            ${r && r.envStats[0].count
+              ? '<br>' + r.envStats[0].count.toLocaleString() +
+                ' recorded readings'
+              : ''}
+          </div>
+        </div>
+
+        <div class="measurement-grid">
+          ${r && r.lastValid
+            ? sensors.length
+              ? sensors.map(s => envSummary(r, s)).join('') + `
+                <details class="trends">
+                  <summary>7-day graphs</summary>
+
+                  ${sensors.map(s => `
+                    <div class="trend-title">
+                      ${esc(s.label)} (${esc(s.unit)})
+                    </div>
+                    ${spark(r, s)}
+                  `).join('')}
+                </details>
+              `
+              : '<p>Configure measurement mapping in Settings.</p>'
+            : '<p>No environment readings loaded.</p>'}
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  renderMonitors();
+  renderSetup();
+}
+
+function renderMonitors() {
+  $('monitors').innerHTML = results.filter(r => !r.env).map(r => {
+    const states = r.channels.map((c, i) => state(r, c, i));
+
+    const counts = states.reduce((a, v) => {
+      a[v] = (a[v] || 0) + 1;
+      return a;
+    }, {});
+
+    return `
+      <article class="card">
+        <div class="row">
+          <h3>Monitor ${r.n}</h3>
+
+          <span class="push pill ${r.status === '1' ? 'online' : 'offline'}">
+            ${esc(connection(r))}
+          </span>
+        </div>
+
+        <div class="small">
+          Last row ${fmt(r.end)}
+          <br>
+          Last valid activity ${fmt(r.lastValid)}
+        </div>
+
+        <div class="counts">
+          <div>
+            <strong>${counts.alive || 0}</strong>
+            <span>ALIVE</span>
+          </div>
+
+          <div>
+            <strong>${counts.dead || 0}</strong>
+            <span>DEAD</span>
+          </div>
+        </div>
+
+        <div class="channels">
+          ${states.map((v, i) => `
+            <button
+              class="channel ${v}"
+              data-n="${r.n}"
+              data-i="${i}"
+              title="Channel ${i + 1}: ${v}"
+            >${i + 1}</button>
+          `).join('')}
+        </div>
+
+        <p class="small">
+          ${counts.unknown || 0} without movement / unassessed
+          · ${counts.empty || 0} empty
+          · ${r.gaps} recording gaps
+
+          ${r.channels.some(c => c.after)
+            ? '<br><span class="warn">Movement after a death call — review channels</span>'
+            : ''}
+
+          ${r.status !== '1'
+            ? '<br>Survival counts refer to last valid recordings.'
+            : ''}
+        </p>
+      </article>
+    `;
+  }).join('') || '<p>No activity monitors in this view.</p>';
+
+  document.querySelectorAll('[data-i]').forEach(b => {
+    b.onclick = () => channel(+b.dataset.n, +b.dataset.i);
+  });
+}
+
+function channel(n, i) {
+  const r = results.find(r => r.n === n);
+  const c = r.channels[i];
+  const s = settings(n);
+
+  $('detail').innerHTML = `
+    <h2>Monitor ${n} · Channel ${i + 1}</h2>
+
+    <p>
+      Status: <strong>${state(r, c, i)}</strong>
+      <br>
+      Last movement: ${fmt(c.lastMove)}
+      <br>
+      Current confirmed zero-activity run starts: ${fmt(c.death)}
+      <br>
+      Last valid observation: ${fmt(r.lastValid)}
+    </p>
+
+    <label>
+      Channel occupancy
+      <select id="occupancy">
+        <option value="auto">Automatic (assess last seven days)</option>
+        <option value="empty">Empty / excluded</option>
+      </select>
+    </label>
+
+    <p class="small">
+      The latest seven days are assessed. A channel needs movement in
+      that window to enter alive/dead counts. Later movement resets the
+      death call. Missing observations do not count as zero activity.
+    </p>
+  `;
+
+  $('occupancy').value = s.empty.includes(i + 1)
+    ? 'empty'
+    : s.occupied.includes(i + 1)
+      ? 'occupied'
+      : 'auto';
+
+  $('occupancy').onchange = e => {
+    s.empty = s.empty.filter(x => x !== i + 1);
+    s.occupied = s.occupied.filter(x => x !== i + 1);
+
+    if (e.target.value === 'empty') s.empty.push(i + 1);
+    if (e.target.value === 'occupied') s.occupied.push(i + 1);
+
+    persist();
+    renderMonitors();
+    $('overview').innerHTML = overview();
+    $('dialog').close();
+  };
+
+  $('dialog').showModal();
+}
+
+function renderSetup() {
+  $('setup').innerHTML = `
+    <h3 style="margin-top:22px">Environment measurements</h3>
+
+    <p class="small">
+      Add a measurement only after checking the DEnM channel mapping.
+      For example, a scale of 0.1 divides a raw value by ten. Defaults
+      follow the
+      <a
+        href="https://trikinetics.com/Downloads/DEnM%20Data%20Sheet.pdf"
+        target="_blank"
+        rel="noopener"
+      >TriKinetics DEnM data sheet</a>.
+    </p>
+
+    ${[1, 2, 3, 4].map(n => `
+      <details>
+        <summary>Incubator ${n} measurement mapping</summary>
+
+        <div id="sensor${n}">
+          ${(cfg.sensors[n] || []).map((s, i) => `
+            <div class="row">
+              <input
+                aria-label="Measurement name"
+                placeholder="Measurement"
+                data-s="${n},${i},label"
+                value="${esc(s.label)}"
+              >
+
+              <label>
+                File column
+                <input
+                  type="number"
+                  min="11"
+                  max="42"
+                  data-s="${n},${i},col"
+                  value="${+s.col}"
+                >
+              </label>
+
+              <label>
+                Scale
+                <input
+                  type="number"
+                  step="any"
+                  data-s="${n},${i},scale"
+                  value="${+s.scale}"
+                >
+              </label>
+
+              <input
+                aria-label="Unit"
+                placeholder="Unit"
+                data-s="${n},${i},unit"
+                value="${esc(s.unit)}"
+              >
+
+              <button
+                class="secondary"
+                data-remove="${n},${i}"
+              >Remove</button>
+            </div>
+          `).join('')}
+        </div>
+
+        <button class="secondary" data-add="${n}">Add measurement</button>
+      </details>
+    `).join('')}
+  `;
+
+  document.querySelectorAll('[data-add]').forEach(e => {
+    e.onclick = () => {
+      (cfg.sensors[e.dataset.add] ||= []).push({
+        label: 'Measurement',
+        col: 11,
+        scale: 1,
+        unit: 'raw'
+      });
+
+      persist();
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-remove]').forEach(e => {
+    e.onclick = () => {
+      const [n, i] = e.dataset.remove.split(',');
+      cfg.sensors[n].splice(+i, 1);
+
+      persist();
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-s]').forEach(e => {
+    e.onchange = () => {
+      const [n, i, k] = e.dataset.s.split(',');
+
+      const v = ['col', 'scale'].includes(k)
+        ? Number(e.value)
+        : e.value;
+
+      if (
+        (k === 'col' && (!Number.isInteger(v) || v < 11 || v > 42)) ||
+        (k === 'scale' && !Number.isFinite(v))
+      ) {
+        $('message').textContent = 'Invalid sensor mapping.';
+        return;
+      }
+
+      cfg.sensors[n][i][k] = v;
+      persist();
+      render();
+    };
+  });
+}
+
+function statusPage() {
+  if (!results.length) throw Error('Load monitor files first.');
+
+  const css = document.querySelector('style').textContent;
+
+  const cards = $('monitors').innerHTML.replace(
+    /<button\b([^>]*)>([\s\S]*?)<\/button>/g,
+    (_, attrs, label) =>
+      '<span ' +
+      attrs.replace(/data-[\w-]+="[^"]*"/g, '') +
+      '>' + label + '</span>'
+  );
+
+  return `
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>Trikinetics status update</title>
+      <style>${css}</style>
+    </head>
+
+    <body>
+      <header>
+        <div class="eyebrow">
+          Social Epigenetics Lab · Status update
+        </div>
+
+        <h1>Trikinetics status update</h1>
+
+        <div class="version">
+          Status snapshot · Version 4 · Black &amp; gold
+        </div>
+
+        <p>${esc($('snapshot').textContent)}</p>
+
+        <p class="small">
+          Page generated
+          ${esc(new Date().toISOString().replace('T', ' ').slice(0, 19))}
+          UTC
+        </p>
+      </header>
+
+      <main>
+        <div class="notice">
+          Saved snapshot. Status refers to the uploaded recordings,
+          not a live connection. Environment summaries cover the
+          seven days ending at each file’s latest recording; averages
+          use valid recorded readings.
+        </div>
+
+        <div class="overview">${overview()}</div>
+
+        <h2>Incubator environment</h2>
+        <div class="incubator-list">${$('incubators').innerHTML}</div>
+
+        <h2>Activity monitors</h2>
+
+        <p class="small">
+          Green: alive · pink: dead · grey: no movement in the last
+          week / no valid data · outlined: empty. Death requires
+          ${esc(cfg.death)} hours of continuous zero activity following
+          movement within the week; recording gaps reset the window.
+        </p>
+
+        <div class="grid">${cards}</div>
+
+        <p class="small">
+          This page is a standalone status report. Replace it with a
+          fresh export after updating the USB recordings.
+        </p>
+      </main>
+    </body>
+    </html>
+  `;
+}
+
+$('exportPage').onclick = () => {
+  try {
+    download(statusPage(), 'status.html', 'text/html;charset=utf-8');
+  } catch (e) {
+    $('message').textContent = e.message;
+  }
+};
+
+$('csv').onclick = () => {
+  const rows = [[
+    'monitor',
+    'channel',
+    'connection',
+    'state',
+    'last_movement',
+    'death_start',
+    'last_valid',
+    'movement_after_death'
+  ]];
+
+  for (const r of results.filter(r => !r.env)) {
+    r.channels.forEach((c, i) => rows.push([
+      r.n,
+      i + 1,
+      connection(r),
+      state(r, c, i),
+      fmt(c.lastMove),
+      fmt(c.death),
+      fmt(r.lastValid),
+      c.after
+    ]));
+  }
+
+  const csv = rows.map(row =>
+    row.map(v => '"' + String(v).replaceAll('"', '""') + '"').join(',')
+  ).join('\r\n');
+
+  download(csv, 'Trikinetics_summary.csv', 'text/csv');
+};
+
+renderSetup();
+render();
+</script>
+</html>
